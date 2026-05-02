@@ -1,7 +1,7 @@
 export type DimQuestion = { id: string; text: string; opts: string[] };
 export type DimensionDef = { key: string; label: string; weight: number; sub: string; badge: string; questions: DimQuestion[] };
 
-export const DIMS = [
+export const DIMS_OLD = [
   {
     key:'delivery', label:'Delivery', weight:22,
     sub:'sprint commitment, estimation, scope, dependencies, recovery',
@@ -132,3 +132,396 @@ export const DIMS = [
     ]
   },
 ];;
+
+export const DIMS_EXPECTED = [
+  {
+    "key": "technical",
+    "label": "Technical Knowledge",
+    "weight": 20,
+    "sub": "Tool mastery, debugging, system logic, and technical problem-solving.",
+    "badge": "bp",
+    "questions": [
+      {
+        "id": "t1",
+        "text": "How often does the employee require assistance with core technical tasks?",
+        "opts": [
+          "Constantly requires hand-holding even for basic tasks",
+          "Frequently needs help with routine daily assignments",
+          "Needs occasional guidance on standard tasks",
+          "Independent on routine work; needs help only with high complexity",
+          "Completely independent; occasionally assists others with their logic",
+          "Technical authority; proactively mentors others to reduce team-wide blockers"
+        ]
+      },
+      {
+        "id": "t2",
+        "text": "How well does the employee understand the tools and technologies required for their role?",
+        "opts": [
+          "Significant knowledge gaps; unable to use core tools effectively",
+          "Basic understanding but lacks depth in essential technical areas",
+          "Functional knowledge; can navigate tools but isn't highly efficient",
+          "Solid technical grasp; uses tools effectively to meet all requirements",
+          "Comprehensive mastery; uses advanced features to optimize output",
+          "Expert-level authority; creates custom tools or workflows for the team"
+        ]
+      },
+      {
+        "id": "t3",
+        "text": "How effectively is technical knowledge applied to solve complex problems?",
+        "opts": [
+          "Unable to translate technical knowledge into practical solutions",
+          "Struggles to apply theory to real-world issues without help",
+          "Can solve standard problems but gets stuck on unique hurdles",
+          "Consistently finds effective solutions to complex problems",
+          "Develops highly efficient solutions that improve system performance",
+          "Innovates new technical approaches that eliminate entire classes of problems"
+        ]
+      },
+      {
+        "id": "t4",
+        "text": "Does the employee understand business logic and system context before implementation?",
+        "opts": [
+          "Blindly implements tasks without regard for system impact",
+          "Often misses how their work affects broader business logic",
+          "Needs reminders to verify system requirements before starting",
+          "Usually checks business logic and documentation thoroughly",
+          "Deeply understands the ecosystem; flags logic conflicts early",
+          "Strategic thinker; aligns technical implementation with long-term business goals"
+        ]
+      },
+      {
+        "id": "t5",
+        "text": "What is the employee's ability to debug and identify root causes?",
+        "opts": [
+          "Unable to debug; fixes often create new issues",
+          "Fixes visible symptoms but misses the underlying root cause",
+          "Requires significant time or help to diagnose standard bugs",
+          "Independently and accurately diagnoses complex issues",
+          "Exceptionally fast at debugging; implements robust, permanent fixes",
+          "Master troubleshooter; anticipates and prevents bugs through defensive coding"
+        ]
+      }
+    ]
+  },
+  {
+    "key": "execution",
+    "label": "Quality and Execution",
+    "weight": 22,
+    "sub": "Reliability, deadline management, accuracy, and effort estimation.",
+    "badge": "bp",
+    "questions": [
+      {
+        "id": "q1",
+        "text": "How reliably does the employee meet established project deadlines?",
+        "opts": [
+          "Consistently misses deadlines, causing project delays",
+          "Frequently requires extensions or reminders to finish",
+          "Hit-or-miss; delivery speed is unpredictable",
+          "Reliably meets most deadlines with minimal supervision",
+          "Always on time; builds trust through consistent delivery",
+          "Consistently delivers early without sacrificing quality"
+        ]
+      },
+      {
+        "id": "q2",
+        "text": "How would you rate the accuracy and completeness of their work?",
+        "opts": [
+          "Submissions are often broken or missing key requirements",
+          "Work requires significant rework after first review",
+          "Generally correct but lacks attention to detail/polishing",
+          "Submissions are accurate, thorough, and ready for use",
+          "Work is of superior quality; requires zero corrections",
+          "The team benchmark; work is flawlessly executed and documented"
+        ]
+      },
+      {
+        "id": "q3",
+        "text": "How realistic and accurate are their effort estimations?",
+        "opts": [
+          "Estimates are wildly inaccurate; cannot be used for planning",
+          "Frequently under-estimates complexity, leading to late delivery",
+          "Inconsistent; sometimes accurate, sometimes far off",
+          "Usually provides realistic timelines within a small margin of error",
+          "Highly precise; accounts for risks and external dependencies",
+          "Strategic estimator; helps the entire team refine their planning logic"
+        ]
+      },
+      {
+        "id": "q4",
+        "text": "How dependable is the employee during critical or high-pressure situations?",
+        "opts": [
+          "Disengages or becomes unproductive under pressure",
+          "Requires heavy direction to stay focused during a crisis",
+          "Available but performance drops when things get difficult",
+          "Dependable and remains calm during high-stakes events",
+          "Proactively takes charge to resolve issues during a crunch",
+          "The 'Rock'; thrives in crisis and stabilizes the entire team"
+        ]
+      },
+      {
+        "id": "q5",
+        "text": "How effectively does the employee handle multiple competing priorities?",
+        "opts": [
+          "Cannot handle more than one task at a time without failing",
+          "Easily overwhelmed; misses tasks when priorities shift",
+          "Struggles to re-prioritize without explicit manager help",
+          "Effectively balances several high-priority items",
+          "Seamlessly manages complex, competing priorities",
+          "Optimizes their own and others' time to ensure all goals are met"
+        ]
+      }
+    ]
+  },
+  {
+    "key": "communication",
+    "label": "Communication",
+    "weight": 18,
+    "sub": "Clarity of ideas, responsiveness, and knowledge sharing.",
+    "badge": "bp",
+    "questions": [
+      {
+        "id": "c1",
+        "text": "How clearly and concisely does the employee communicate updates and ideas?",
+        "opts": [
+          "Rarely communicates; status is always a mystery",
+          "Communication is disorganized or difficult to follow",
+          "Provides updates only when prompted by others",
+          "Clear and concise; keeps relevant people well-informed",
+          "Highly articulate; tailors communication to the audience",
+          "Exceptional communicator; ensures total transparency across the team"
+        ]
+      },
+      {
+        "id": "c2",
+        "text": "How responsive is the employee to team messages and feedback?",
+        "opts": [
+          "Unresponsive for long periods; blocks team progress",
+          "Slow to respond; often requires multiple follow-ups",
+          "Responsive, but answers are often vague or incomplete",
+          "Prompt and professional in all communications",
+          "Highly proactive; anticipates information needs in advance",
+          "Instantaneous and helpful; sets the standard for team availability"
+        ]
+      },
+      {
+        "id": "c3",
+        "text": "To what extent does the employee share knowledge with the team?",
+        "opts": [
+          "Hoards knowledge; makes the team dependent on them",
+          "Rarely shares information unless forced to",
+          "Shares information only when explicitly asked",
+          "Regularly documents work and shares tips with the team",
+          "Actively mentors others and creates learning resources",
+          "Transformed the team's knowledge-sharing culture"
+        ]
+      }
+    ]
+  },
+  {
+    "key": "behavioral",
+    "label": "Behavioral & Teamwork",
+    "weight": 20,
+    "sub": "Collaboration, accountability, and response to feedback.",
+    "badge": "bp",
+    "questions": [
+      {
+        "id": "b1",
+        "text": "How often does the employee help unblock or guide others?",
+        "opts": [
+          "Ignores others' struggles to focus only on self",
+          "Only helps others if it is a formal requirement",
+          "Helpful when asked, but doesn't seek out opportunities",
+          "Proactively notices when others are stuck and offers help",
+          "Dedicated to team success; makes everyone around them better",
+          "Servant leader; prioritizes team flow above personal tasks"
+        ]
+      },
+      {
+        "id": "b2",
+        "text": "How does the employee demonstrate accountability during failures?",
+        "opts": [
+          "Actively blames others or external factors for failures",
+          "Avoids taking responsibility for their own mistakes",
+          "Admits mistakes only when the evidence is presented",
+          "Takes immediate ownership and focuses on the solution",
+          "Uses failures as transparent learning moments for the team",
+          "Models radical accountability; turns every crisis into a growth win"
+        ]
+      },
+      {
+        "id": "b3",
+        "text": "How does the employee handle constructive feedback and criticism?",
+        "opts": [
+          "Becomes hostile or dismissive when receiving feedback",
+          "Accepts it quietly but becomes discouraged or demotivated",
+          "Listens but is very slow to apply the feedback",
+          "Accepts feedback professionally and makes visible changes",
+          "Actively seeks out criticism as a primary tool for growth",
+          "Solicits feedback from all levels to constantly evolve"
+        ]
+      },
+      {
+        "id": "b4",
+        "text": "How does the employee contribute to the general team environment?",
+        "opts": [
+          "Toxic or negative influence on team morale",
+          "Often creates friction or avoids social collaboration",
+          "Neutral; exists in the space without adding or taking away",
+          "Positive and collaborative; a reliable team player",
+          "Boosts overall morale and fosters a high-trust culture",
+          "The cultural heart of the team; inspires others to do their best"
+        ]
+      }
+    ]
+  },
+  {
+    "key": "initiative",
+    "label": "Initiative & Growth",
+    "weight": 20,
+    "sub": "Proactivity, process improvement, and handling ambiguity.",
+    "badge": "bp",
+    "questions": [
+      {
+        "id": "i1",
+        "text": "What is the employee's reaction to problems outside their direct responsibility?",
+        "opts": [
+          "Walks away from problems that aren't assigned to them",
+          "Complains about external issues but does nothing",
+          "Reports problems to a manager but takes no action",
+          "Flags the issue and suggests a potential fix",
+          "Takes temporary ownership to ensure the problem is solved",
+          "Fearlessly tackles team-wide issues before they are ever assigned"
+        ]
+      },
+      {
+        "id": "i2",
+        "text": "How does the employee handle ambiguity or tasks with unclear instructions?",
+        "opts": [
+          "Paralyzed by ambiguity; stops working until told what to do",
+          "Spends too much time asking for minor clarifications",
+          "Needs a clear roadmap before they feel comfortable starting",
+          "Makes logical assumptions to keep the project moving",
+          "Thrives in ambiguity; clarifies the path for themselves",
+          "Architect of clarity; turns vague ideas into actionable plans for others"
+        ]
+      },
+      {
+        "id": "i3",
+        "text": "To what extent does the employee seek to improve existing team processes?",
+        "opts": [
+          "Actively resists any change to current workflows",
+          "Ignores inefficiencies and just 'deals with it'",
+          "Notices flaws but doesn't know how to fix them",
+          "Suggests meaningful improvements to the manager",
+          "Independently implements workflows that save team time",
+          "A process innovator; constantly refining the team's 'engine'"
+        ]
+      },
+      {
+        "id": "i4",
+        "text": "What is the employee's role when the team faces a setback or failure?",
+        "opts": [
+          "Adds to the chaos by panicking or quitting",
+          "Disengages and waits for someone else to fix it",
+          "Follows orders during recovery but remains passive",
+          "Helps with recovery and stays focused on the goal",
+          "Leads the recovery effort and ensures the team learns",
+          "Turns setbacks into major strategic pivots for future success"
+        ]
+      }
+    ]
+  }
+];
+
+export const DIMS = [
+  {
+    "key": "technical",
+    "label": "Technical Knowledge",
+    "weight": 20,
+    "sub": "Tool mastery, debugging, system logic, and technical problem-solving.",
+    "badge": "bp",
+    "questions": [
+      { "id": "t1", "text": "How often does the employee require assistance with core technical tasks?", "opts": ["Constantly requires hand-holding even for basic tasks", "Frequently needs help with routine daily assignments", "Needs occasional guidance on standard tasks", "Independent on routine work; needs help only with high complexity", "Completely independent; occasionally assists others with their logic", "Technical authority; proactively mentors others to reduce team-wide blockers"] },
+      { "id": "t2", "text": "How well does the employee understand the tools and technologies required for their role?", "opts": ["Significant knowledge gaps; unable to use core tools effectively", "Basic understanding but lacks depth in essential technical areas", "Functional knowledge; can navigate tools but isn't highly efficient", "Solid technical grasp; uses tools effectively to meet all requirements", "Comprehensive mastery; uses advanced features to optimize output", "Expert-level authority; creates custom tools or workflows for the team"] },
+      { "id": "t3", "text": "How effectively is technical knowledge applied to solve complex problems?", "opts": ["Unable to translate technical knowledge into practical solutions", "Struggles to apply theory to real-world issues without help", "Can solve standard problems but gets stuck on unique hurdles", "Consistently finds effective solutions to complex problems", "Develops highly efficient solutions that improve system performance", "Innovates new technical approaches that eliminate entire classes of problems"] },
+      { "id": "t4", "text": "Does the employee understand business logic and system context before implementation?", "opts": ["Blindly implements tasks without regard for system impact", "Often misses how their work affects broader business logic", "Needs reminders to verify system requirements before starting", "Usually checks business logic and documentation thoroughly", "Deeply understands the ecosystem; flags logic conflicts early", "Strategic thinker; aligns technical implementation with long-term business goals"] },
+      { "id": "t5", "text": "What is the employee's ability to debug and identify root causes?", "opts": ["Unable to debug; fixes often create new issues", "Fixes visible symptoms but misses the underlying root cause", "Requires significant time or help to diagnose standard bugs", "Independently and accurately diagnoses complex issues", "Exceptionally fast at debugging; implements robust, permanent fixes", "Master troubleshooter; anticipates and prevents bugs through defensive coding"] },
+      { "id": "t6", "text": "How effectively does the employee document technical processes and code?", "opts": ["Documentation is non-existent or misleading", "Writes minimal notes that others struggle to follow", "Documents work only when explicitly asked", "Maintains clear, standard documentation for all tasks", "Produces high-quality guides that simplify complex systems for others", "Sets the organizational standard for technical clarity and documentation"] }
+    ]
+  },
+  {
+    "key": "delivery",
+    "label": "Delivery",
+    "weight": 22,
+    "sub": "Sprint commitment, estimation, scope, dependencies, and recovery.",
+    "badge": "bp",
+    "questions": [
+      { "id": "d1", "text": "Does this person deliver what they promised in the sprint?", "opts": ["Almost never — the team cannot count on their commitments", "Often misses — slippage is the norm, not the exception", "Hit or miss — delivery is unpredictable", "Usually delivers; minor delays occasionally", "Delivers what was agreed consistently, sprint after sprint", "Always on time — others plan their own work around this person’s word"] },
+      { "id": "d2", "text": "How accurate are their time or effort estimates before starting a task?", "opts": ["Almost always wrong — usually by a significant margin", "Frequently off; the team has to adjust plans around this", "Inconsistent — sometimes right, sometimes far off", "Usually in the right range; small misses are common", "Reliable estimates — plans built on them work out", "Sets the estimation benchmark; captures risks others miss"] },
+      { "id": "d3", "text": "Do they stick to the agreed scope without unauthorized changes?", "opts": ["Adds or removes things without informing anyone", "Often drifts from scope; changes are found late", "Sometimes goes off-scope with no clear communication", "Usually stays in scope; raises changes before acting", "Always works in agreed scope; flags proposals early", "Treats scope as a contract; perfectly balances flexibility with agreement"] },
+      { "id": "d4", "text": "Do they spot dependencies before they turn into blockers?", "opts": ["Never checks — constantly gets blocked by predictable issues", "Rarely looks ahead; blockers show up at the worst moments", "Sometimes catches dependencies; misses less obvious ones", "Usually maps dependencies before starting; catches most risks", "Consistently resolves dependencies before they block delivery", "Strategic foresight; coordinates cross-team risks before the sprint starts"] },
+      { "id": "d5", "text": "When they fall behind, how do they handle it?", "opts": ["Says nothing until it can no longer be hidden", "Slow to react; recovery is disorganized and late", "Eventually adjusts but communication is vague", "Usually catches slippage early and shares a revised plan", "Flags it fast, provides a concrete plan, and minimizes impact", "Exceptional resilience; recovers so smoothly the team barely notices"] },
+      { "id": "d6", "text": "How accurately do they judge when work is 'Ready to Ship'?", "opts": ["Frequently says 'done' when work is incomplete or broken", "Often ships work that needs significant fixes after merging", "Judgment is inconsistent — sometimes early, sometimes over-polished", "Usually judges release readiness correctly", "Consistently ships at the optimal time with high stability", "Their 'Definition of Done' is the standard for the entire team"] }
+    ]
+  },
+  {
+    "key": "quality_execution",
+    "label": "Quality & Execution",
+    "weight": 18,
+    "sub": "Accuracy, completeness, availability, and handling multiple priorities.",
+    "badge": "bp",
+    "questions": [
+      { "id": "q1", "text": "How would you rate the accuracy and completeness of their work?", "opts": ["Submissions are often broken or missing requirements", "Work requires significant rework after first review", "Generally correct but lacks attention to detail", "Submissions are accurate, thorough, and ready for use", "Work is of superior quality; requires zero corrections", "The team benchmark; work is flawlessly executed"] },
+      { "id": "q2", "text": "How dependable is the employee during critical/high-pressure situations?", "opts": ["Disengages or becomes unproductive under pressure", "Requires heavy direction to stay focused during a crisis", "Available but performance drops when things get difficult", "Dependable and remains calm during high-stakes events", "Proactively takes charge to resolve issues during a crunch", "The 'Rock'; thrives in crisis and stabilizes the entire team"] },
+      { "id": "q3", "text": "How effectively does the employee handle multiple competing priorities?", "opts": ["Cannot handle more than one task without failing", "Easily overwhelmed; misses tasks when priorities shift", "Struggles to re-prioritize without manager help", "Effectively balances several high-priority items", "Seamlessly manages complex, competing priorities", "Optimizes their own and others' time to ensure all goals are met"] },
+      { "id": "q4", "text": "How consistent is the quality of their work across different types of tasks?", "opts": ["Quality fluctuates wildly; cannot be trusted for certain tasks", "Good at some tasks but very poor at others", "Inconsistent; requires constant monitoring", "Consistently produces good work regardless of the task type", "Maintains a high standard across all diverse assignments", "Exemplary quality regardless of complexity or novelty of task"] },
+      { "id": "q5", "text": "What is the employee’s level of attention to edge cases and error handling?", "opts": ["Only builds for the 'happy path'; ignores errors", "Rarely considers what happens when things go wrong", "Covers basic errors but misses many edge cases", "Usually accounts for standard edge cases and errors", "Thoroughly handles nearly all potential failure points", "Architects for total system stability; anticipates every edge case"] },
+      { "id": "q6", "text": "How would you rate their focus on non-functional requirements (security, performance, etc)?", "opts": ["Ignores non-functional requirements entirely", "Only addresses them if forced to during a review", "Aware of them but often compromises for speed", "Balances speed with standard performance/security needs", "Proactively optimizes work for performance and security", "Teaches the team how to bake high-level standards into every task"] }
+    ]
+  },
+  {
+    "key": "communication",
+    "label": "Communication",
+    "weight": 14,
+    "sub": "Clarity of updates, responsiveness, and meeting contribution.",
+    "badge": "bp",
+    "questions": [
+      { "id": "c1", "text": "How clearly and concisely does the employee communicate updates?", "opts": ["Rarely communicates; status is always a mystery", "Communication is disorganized or difficult to follow", "Provides updates only when prompted by others", "Clear and concise; keeps relevant people well-informed", "Highly articulate; tailors communication to the audience", "Exceptional; ensures total transparency across the team"] },
+      { "id": "c2", "text": "How responsive is the employee to team messages and feedback?", "opts": ["Unresponsive for long periods; blocks team progress", "Slow to respond; often requires multiple follow-ups", "Responsive, but answers are often vague or incomplete", "Prompt and professional in all communications", "Highly proactive; anticipates information needs in advance", "Instantaneous and helpful; sets the standard for availability"] },
+      { "id": "c3", "text": "To what extent does the employee share knowledge with the team?", "opts": ["Hoards knowledge; makes the team dependent on them", "Rarely shares information unless forced to", "Shares information only when explicitly asked", "Regularly documents work and shares tips with the team", "Actively mentors others and creates learning resources", "Transformed the team's knowledge-sharing culture"] },
+      { "id": "c4", "text": "How effectively do they contribute during team meetings or brainstorms?", "opts": ["Disengaged; rarely contributes or pays attention", "Contributes only when called upon directly", "Participates but often goes off-topic or adds little value", "Contributes relevant, helpful ideas to the discussion", "Highly engaged; asks the right questions to move the team forward", "Facilitates great discussions; helps the team reach consensus"] },
+      { "id": "c5", "text": "How effectively do they communicate with stakeholders or non-technical members?", "opts": ["Communication is confusing or alienates non-technical people", "Uses too much jargon; struggles to be understood", "Communicates adequately but lacks confidence or clarity", "Translates technical concepts into clear business language", "Highly persuasive and clear to all audience types", "The bridge; aligns technical and business needs perfectly"] },
+      { "id": "c6", "text": "How well do they handle difficult or uncomfortable conversations?", "opts": ["Avoids difficult conversations at all costs", "Becomes aggressive or defensive during conflict", "Handled awkwardly; results in confusion or tension", "Approaches difficult topics with professionalism and honesty", "Resolves conflict smoothly while maintaining respect", "De-escalates tension and finds common ground in any situation"] }
+    ]
+  },
+  {
+    "key": "behavioral",
+    "label": "Behavioral & Teamwork",
+    "weight": 12,
+    "sub": "Collaboration, accountability, and response to criticism.",
+    "badge": "bp",
+    "questions": [
+      { "id": "b1", "text": "How often does the employee help unblock or guide others?", "opts": ["Ignores others' struggles to focus only on self", "Only helps others if it is a formal requirement", "Helpful when asked, but doesn't seek out opportunities", "Proactively notices when others are stuck and offers help", "Dedicated to team success; makes everyone around them better", "Servant leader; prioritizes team flow above personal tasks"] },
+      { "id": "b2", "text": "How does the employee demonstrate accountability during failures?", "opts": ["Actively blames others or external factors for failures", "Avoids taking responsibility for their own mistakes", "Admits mistakes only when the evidence is presented", "Takes immediate ownership and focuses on the solution", "Uses failures as transparent learning moments for the team", "Models radical accountability; turns every crisis into a growth win"] },
+      { "id": "b3", "text": "How does the employee handle constructive feedback and criticism?", "opts": ["Becomes hostile or dismissive when receiving feedback", "Accepts it quietly but becomes discouraged or demotivated", "Listens but is very slow to apply the feedback", "Accepts feedback professionally and makes visible changes", "Actively seeks out criticism as a primary tool for growth", "Solicits feedback from all levels to constantly evolve"] },
+      { "id": "b4", "text": "How does the employee contribute to the general team environment?", "opts": ["Toxic or negative influence on team morale", "Often creates friction or avoids social collaboration", "Neutral; exists in the space without adding or taking away", "Positive and collaborative; a reliable team player", "Boosts overall morale and fosters a high-trust culture", "The cultural heart of the team; inspires others to do their best"] },
+      { "id": "b5", "text": "How effectively do they collaborate across different functional roles?", "opts": ["Struggles to work with anyone outside their immediate silo", "Works with others only under strict supervision", "Collaborates adequately but stays within narrow boundaries", "Actively builds relationships with other roles/teams", "Seamlessly integrates their work with other functions", "Unifies diverse roles toward a single, cohesive goal"] },
+      { "id": "b6", "text": "How well does the employee manage their own emotions under stress?", "opts": ["Frequent outbursts or obvious visible frustration", "Clearly stressed in a way that affects team energy", "Performance remains okay, but attitude becomes negative", "Maintains a professional demeanor during difficult times", "Extremely resilient; stays calm and focused regardless of stress", "A calming influence; helps others stay level-headed during pressure"] }
+    ]
+  },
+  {
+    "key": "initiative",
+    "label": "Initiative & Growth",
+    "weight": 12,
+    "sub": "Proactivity, process improvement, and handling ambiguity.",
+    "badge": "bp",
+    "questions": [
+      { "id": "i1", "text": "What is the employee's reaction to problems outside their responsibility?", "opts": ["Walks away from problems that aren't assigned to them", "Complains about external issues but does nothing", "Reports problems to a manager but takes no action", "Flags the issue and suggests a potential fix", "Takes temporary ownership to ensure the problem is solved", "Fearlessly tackles team-wide issues before they are ever assigned"] },
+      { "id": "i2", "text": "How does the employee handle ambiguity or tasks with unclear instructions?", "opts": ["Paralyzed by ambiguity; stops working until told what to do", "Spends too much time asking for minor clarifications", "Needs a clear roadmap before they feel comfortable starting", "Makes logical assumptions to keep the project moving", "Thrives in ambiguity; clarifies the path for themselves", "Architect of clarity; turns vague ideas into actionable plans for others"] },
+      { "id": "i3", "text": "To what extent does the employee seek to improve existing team processes?", "opts": ["Actively resists any change to current workflows", "Ignores inefficiencies and just 'deals with it'", "Notices flaws but doesn't know how to fix them", "Suggests meaningful improvements to the manager", "Independently implements workflows that save team time", "A process innovator; constantly refining the team's 'engine'"] },
+      { "id": "i4", "text": "What is the employee's role when the team faces a setback or failure?", "opts": ["Adds to the chaos by panicking or quitting", "Disengages and waits for someone else to fix it", "Follows orders during recovery but remains passive", "Helps with recovery and stays focused on the goal", "Leads the recovery effort and ensures the team learns", "Turns setbacks into major strategic pivots for future success"] },
+      { "id": "i5", "text": "How proactive are they in learning new skills for the team's benefit?", "opts": ["Learning has stalled; relies on outdated skills", "Learns only when forced by project requirements", "Open to learning but waits for the company to provide it", "Self-teaches new skills relevant to current work", "Quickly masters new technologies and shares with the team", "Always two steps ahead; brings future tech into today's work"] },
+      { "id": "i6", "text": "Do they seek out additional responsibilities or high-impact work?", "opts": ["Actively avoids any work beyond the bare minimum", "Only does exactly what is assigned and nothing more", "Takes extra work if directly asked by the manager", "Regularly volunteers for tasks that help the team", "Actively identifies and takes on high-impact projects", "Relentlessly seeks out challenges that push the whole company forward"] }
+    ]
+  }
+];

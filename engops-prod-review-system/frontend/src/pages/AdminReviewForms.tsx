@@ -5,7 +5,7 @@ import { DIMS, DIM_COLORS, type DimensionDef } from '../questionBank';
 import { getUser, logout } from '../auth/auth';
 
 type Sel = Record<string, Set<string>>;
-
+const minQuestionSize = 5;
 function emptySel(): Sel {
   const s: Sel = {};
   DIMS.forEach((d) => {
@@ -38,7 +38,7 @@ export function AdminReviewForms() {
     setForms(data);
   }
 
-  const readyDims = useMemo(() => DIMS.filter((d) => sel[d.key].size === 5).length, [sel]);
+  const readyDims = useMemo(() => DIMS.filter((d) => sel[d.key].size === minQuestionSize).length, [sel]);
   const canGenerate = readyDims === DIMS.length;
 
   function toggleQ(dimKey: string, qid: string) {
@@ -46,7 +46,7 @@ export function AdminReviewForms() {
       const next = { ...prev, [dimKey]: new Set(prev[dimKey]) };
       const set = next[dimKey];
       if (set.has(qid)) set.delete(qid);
-      else if (set.size < 5) set.add(qid);
+      else if (set.size < minQuestionSize) set.add(qid);
       return next;
     });
   }
@@ -54,7 +54,7 @@ export function AdminReviewForms() {
   function autoSelect() {
     const next = emptySel();
     DIMS.forEach((d) => {
-      d.questions.slice(0, 5).forEach((q) => next[d.key].add(q.id));
+      d.questions.slice(0, minQuestionSize).forEach((q) => next[d.key].add(q.id));
     });
     setSel(next);
   }
@@ -145,7 +145,7 @@ export function AdminReviewForms() {
             <div className="sidebar-label">Dimensions</div>
             {DIMS.map((d) => {
               const n = sel[d.key].size;
-              const done = n === 5;
+              const done = n === minQuestionSize;
               return (
                 <div key={d.key} className={'dim-item' + (activeDim === d.key ? ' active' : '')} onClick={() => setActiveDim(d.key)}>
                   <span className="dim-item-name">{d.label}</span>
@@ -191,7 +191,7 @@ export function AdminReviewForms() {
                 </select>
               </div>
               <button type="button" className="secondary-btn" onClick={autoSelect}>
-                Auto-select 5 each
+                Auto-select {minQuestionSize} each
               </button>
               <button type="button" className="secondary-btn" onClick={clearSel}>
                 Clear
@@ -473,7 +473,7 @@ function DimPanel({ dim, active, sel, onToggle }: { dim: DimensionDef; active: b
                 <div className="q-text">{q.text}</div>
               </div>
               <div className="q-preview">
-                <span className="prev-chip lo">0 · {q.opts[0].slice(0, 36)}…</span>
+                <span className="prev-chip lo">1 · {q.opts[0].slice(0, 36)}…</span>
                 <span className="prev-chip">3 · {q.opts[3].slice(0, 36)}…</span>
                 <span className="prev-chip hi">5 · {q.opts[5].slice(0, 36)}…</span>
               </div>

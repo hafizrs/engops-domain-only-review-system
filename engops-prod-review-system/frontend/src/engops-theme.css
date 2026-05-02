@@ -693,6 +693,11 @@ body {
   border-color: var(--rborder);
   color: var(--red);
 }
+.prev-chip.mid {
+  border-color: var(--gborder);
+  color: var(--amber);
+}
+
 .prev-chip.hi {
   border-color: var(--gborder);
   color: var(--green);
