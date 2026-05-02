@@ -1,0 +1,116 @@
+ENGOPS REVIEW SYSTEM - LOCAL SETUP GUIDE
+========================================
+
+Project:
+EngOps Review System
+Frontend: React + Vite
+Backend: Node.js + Express
+Database: MongoDB using direct connection string
+Auth: Domain-only email validation (@domain.com)
+
+
+1. REQUIREMENTS
+---------------
+
+Install these first:
+
+1) Node.js LTS
+   Recommended: Node.js 20+
+
+2) VS Code
+
+3) Access to MongoDB server: connectionstring
+
+4) Download and extract the project ZIP:
+   engops-domain-only-review-system.zip
+
+
+2. PROJECT STRUCTURE
+--------------------
+
+After extracting the ZIP, you should see:
+
+engops-domain-only-review-system/
+  backend/
+  frontend/
+  README.md
+
+
+3. OPEN PROJECT IN VS CODE
+--------------------------
+
+1) Open VS Code
+2) Click: File -> Open Folder
+3) Select:
+   engops-domain-only-review-system
+
+
+4. BACKEND ENV SETUP
+--------------------
+
+Go to:
+
+backend/.env.example
+
+Copy it and rename the copied file to:
+
+backend/.env
+
+Use this config:
+
+PORT=4000
+MONGO_URI=connectionstring
+JWT_SECRET=change-this-local-secret
+ALLOWED_DOMAIN=domain.com
+
+
+
+5. FRONTEND ENV SETUP
+---------------------
+
+Go to:
+
+frontend/.env.example
+
+Copy it and rename the copied file to:
+
+frontend/.env
+
+Use this config:
+
+VITE_API_URL=http://localhost:5173
+
+
+6. RUN BACKEND LOCALLY
+----------------------
+
+Open a terminal in VS Code.
+
+Run:
+
+cd backend
+npm install
+npm run start:dev
+
+Expected result:
+
+Backend running on http://localhost:4000
+MongoDB connected successfully
+
+
+7. RUN FRONTEND LOCALLY
+-----------------------
+
+Open another terminal in VS Code.
+
+Run:
+
+cd frontend
+npm install
+npm run dev
+
+Expected result:
+
+Frontend running on:
+
+http://localhost:5173
