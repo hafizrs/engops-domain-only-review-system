@@ -92,7 +92,7 @@ export function AdminReviewForms() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 26 }}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', padding: '32px 16px', display: 'flex', flexDirection: 'column', gap: 32 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <div style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>
@@ -113,15 +113,15 @@ export function AdminReviewForms() {
         </div>
       </div>
 
-      <div className="form-meta">
+      <div className="form-meta" style={{ background: 'var(--card-bg)', padding: 24, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
         <div className="fld">
           <label htmlFor="review-title">Review Form Title</label>
-          <input id="review-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Q2 2025 Mid-Cycle Review" />
+          <input id="review-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Q2 2025 Mid-Cycle Review" style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 14, marginTop: 8 }} />
         </div>
-        <div className="meta-actions">
+        <div className="meta-actions" style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
           <div className="fld" style={{ minWidth: 180 }}>
             <label htmlFor="target-role">Target Role</label>
-            <select id="target-role" value={role} onChange={(e) => setRole(e.target.value)}>
+            <select id="target-role" value={role} onChange={(e) => setRole(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 14, marginTop: 8 }}>
               <option value="junior">Junior Engineer</option>
               <option value="mid">Mid Engineer</option>
               <option value="senior">Senior Engineer</option>
@@ -145,8 +145,8 @@ export function AdminReviewForms() {
         <DimPanel key={d.key} dim={d} active={true} sel={sel[d.key]} onToggle={toggleQ} />
       ))}
 
-      <div style={{ marginTop: 28 }}>
-        <h3 style={{ fontFamily: 'Syne', fontSize: 16 }}>Existing links</h3>
+      <div style={{ marginTop: 28, background: 'var(--card-bg)', padding: 24, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+        <h3 style={{ fontFamily: 'Syne', fontSize: 18, marginBottom: 16 }}>Existing links</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 12 }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border2)', textAlign: 'left', fontSize: 11, color: 'var(--text3)', fontFamily: 'DM Mono' }}>
