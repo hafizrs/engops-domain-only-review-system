@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getUser } from '../auth/auth';
+import { getUser, logout } from '../auth/auth';
 
 export function Home() {
   const u = getUser();
@@ -21,16 +21,26 @@ export function Home() {
         <div className="login-desc">
           {u ? (
             <>
-              Signed in as <strong>{u.name}</strong> ({u.role}).{' '}
-              {u.role === 'admin' ? (
-                <Link to="/admin/review-forms">Go to Review Forms →</Link>
-              ) : (
-                <>Open a review link from your admin to complete a review.</>
-              )}
+              Signed in as <strong>{u.name}</strong> ({u.role}).
+              <div style={{ marginTop: 14, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {u.role === 'admin' ? (
+                  <Link to="/admin/dashboard" className="primary-btn" style={{ textDecoration: 'none' }}>
+                    Go to Dashboard →
+                  </Link>
+                ) : (
+                  <span style={{ color: 'var(--text3)' }}>Open a review link from your admin to complete a review.</span>
+                )}
+                <button type="button" className="secondary-btn" onClick={() => logout()}>
+                  Sign out
+                </button>
+              </div>
             </>
           ) : (
             <>
-              <Link to="/login">Sign in</Link> to create links (admin) or submit reviews (manager).
+              <Link to="/login" className="primary-btn" style={{ textDecoration: 'none' }}>
+                Sign in
+              </Link>{' '}
+              to create links (admin) or submit reviews (manager).
             </>
           )}
         </div>

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
-import { getUser, setSession, type AuthUser } from '../auth/auth';
+import { getUser, logout, setSession, type AuthUser } from '../auth/auth';
 import { DIM_COLORS, ROLE_LABELS } from '../questionBank';
 
 type DimQ = { id: string; text: string; opts: string[] };
@@ -498,7 +498,12 @@ export function ManagerReview() {
             <span id="form-nav-title">{form.title}</span>
           </div>
         </div>
-        <div style={{ fontFamily: 'DM Mono', fontSize: 11, color: 'var(--text3)' }}>{navStepLabel}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ fontFamily: 'DM Mono', fontSize: 11, color: 'var(--text3)' }}>{navStepLabel}</div>
+          <button type="button" className="secondary-btn" onClick={() => logout()}>
+            Sign out
+          </button>
+        </div>
       </nav>
       <div className="form-overall-bar">
         <div className="form-overall-fill" style={{ width: pct + '%' }} />

@@ -38,8 +38,8 @@ export class SubmissionsService {
     const form: any = await this.forms.getByCode(code);
     const revieweeName = (dto.revieweeName || '').trim();
     if (!revieweeName) throw new BadRequestException('Reviewee name is required');
-    const exists = await this.model.exists({ formId: form._id, reviewerEmail: user.email.toLowerCase() });
-    if (exists) throw new ConflictException('You have already submitted this review');
+    const exists = await this.model.exists({ formId: form._id, reviewerEmail: user.email.toLowerCase(), revieweeName: revieweeName.toLowerCase() });
+    if (exists) throw new ConflictException('You have already submitted a review for this person');
     return this.model.create({
       formId: form._id,
       formCode: code,
