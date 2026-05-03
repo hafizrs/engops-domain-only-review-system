@@ -22,6 +22,7 @@ export function AdminReviewForms() {
   const [createdUrl, setCreatedUrl] = useState('');
   const [createdCode, setCreatedCode] = useState('');
   const [copyFlash, setCopyFlash] = useState('');
+  const [copiedId, setCopiedId] = useState<string>('');
 
   useEffect(() => {
     loadForms();
@@ -157,19 +158,37 @@ export function AdminReviewForms() {
             </tr>
           </thead>
           <tbody>
-            {forms.map((f) => (
-              <tr key={f._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, fontFamily: 'DM Mono', fontSize: 12 }}>{f.code}</td>
-                <td style={{ padding: 8 }}>{f.title}</td>
-                <td style={{ padding: 8 }}>{f.role}</td>
-                <td style={{ padding: 8, fontSize: 12, color: 'var(--text3)' }}>{new Date(f.createdAt).toLocaleString()}</td>
-                <td style={{ padding: 8 }}>
-                  <Link to={`/admin/submissions/${f.code}`} className="secondary-btn" style={{ textDecoration: 'none' }}>
-                    Submissions
-                  </Link>
-                </td>
-              </tr>
-            ))}
+            {forms.map((f) => {
+              const reviewUrl = `${globalThis.location.origin}/review/${f.code}`;
+              return (
+                <tr key={f._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td style={{ padding: 8, fontFamily: 'DM Mono', fontSize: 12 }}>{f.code}</td>
+                  <td style={{ padding: 8 }}>{f.title}</td>
+                  <td style={{ padding: 8 }}>{f.role}</td>
+                  <td style={{ padding: 8, fontSize: 12, color: 'var(--text3)' }}>{new Date(f.createdAt).toLocaleString()}</td>
+                  <td style={{ padding: 8, display: 'flex', gap: 8 }}>
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(reviewUrl);
+                          setCopiedId(f._id);
+                          setTimeout(() => setCopiedId(''), 2000);
+                        } catch {
+                          // fallback
+                        }
+                      }}
+                    >
+                      {copiedId === f._id ? 'Copied!' : 'Copy Link'}
+                    </button>
+                    <Link to={`/admin/submissions/${f.code}`} className="secondary-btn" style={{ textDecoration: 'none' }}>
+                      Submissions
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
