@@ -246,10 +246,12 @@ function DimPanel({ dim, active, sel, onToggle }: { readonly dim: DimensionDef; 
                 <div className="q-check">{isSel ? '✓' : ''}</div>
                 <div className="q-text">{q.text}</div>
               </div>
-              <div className="q-preview">
-                <span className="prev-chip lo">0 · {q.opts[0].slice(0, 36)}…</span>
-                <span className="prev-chip">3 · {q.opts[3].slice(0, 36)}…</span>
-                <span className="prev-chip hi">5 · {q.opts[5].slice(0, 36)}…</span>
+                      <div className="q-preview">
+                {q.opts.map((opt, si) => (
+                  <span key={si} className={`prev-chip ${si === 0 ? 'lo' : si === 5 ? 'hi' : ''}`}>
+                    {si} · {opt}
+                  </span>
+                ))}
               </div>
             </button>
           );

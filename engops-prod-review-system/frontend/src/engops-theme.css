@@ -683,11 +683,18 @@ body {
 .prev-chip {
   font-size: 10px;
   font-family: 'DM Mono', monospace;
-  padding: 2px 7px;
+  padding: 4px 10px;
   border-radius: 999px;
   background: var(--s3);
   border: 1px solid var(--border);
   color: var(--text3);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: normal;
+  word-break: break-word;
+  max-width: calc(50% - 6px);
+  min-width: 0;
 }
 .prev-chip.lo {
   border-color: var(--rborder);
