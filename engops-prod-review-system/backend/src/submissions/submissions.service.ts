@@ -40,18 +40,25 @@ export class SubmissionsService {
     if (!revieweeName) throw new BadRequestException('Reviewee name is required');
     const exists = await this.model.exists({ formId: form._id, reviewerEmail: user.email.toLowerCase(), revieweeName: revieweeName.toLowerCase() });
     if (exists) throw new ConflictException('You have already submitted a review for this person');
-    return this.model.create({
-      formId: form._id,
-      formCode: code,
-      reviewerName: user.name || user.email,
-      reviewerEmail: user.email.toLowerCase(),
-      revieweeName,
-      revieweeEmail: dto.revieweeEmail?.trim().toLowerCase() || undefined,
-      answers: dto.answers,
-      totalScore: dto.totalScore,
-      submittedAt: new Date(),
-      submittedBy: new Types.ObjectId(user.sub),
-    });
+    try {
+      return await this.model.create({
+        formId: form._id,
+        formCode: code,
+        reviewerName: user.name || user.email,
+        reviewerEmail: user.email.toLowerCase(),
+        revieweeName,
+        revieweeEmail: dto.revieweeEmail?.trim().toLowerCase() || undefined,
+        answers: dto.answers,
+        totalScore: dto.totalScore,
+        submittedAt: new Date(),
+        submittedBy: new Types.ObjectId(user.sub),
+      });
+    } catch (err: any) {
+      if (err && (err.code === 11000 || err.message?.includes('E11000'))) {
+        throw new ConflictException('You have already submitted a review for this person');
+      }
+      throw err;
+    }
   }
   private responseDetailsForSubmission(form: any, submission: any): ResponseDetail[] {
     const dims = form?.questions?.dims ?? [];

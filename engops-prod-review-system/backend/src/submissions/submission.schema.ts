@@ -15,4 +15,4 @@ export class Submission {
   @Prop({ required: true, type: Types.ObjectId, ref: 'User' }) submittedBy: Types.ObjectId;
 }
 export const SubmissionSchema = SchemaFactory.createForClass(Submission);
-SubmissionSchema.index({ formId: 1, reviewerEmail: 1 }, { unique: true });
+SubmissionSchema.index({ formId: 1, reviewerEmail: 1, revieweeName: 1 }, { unique: true });

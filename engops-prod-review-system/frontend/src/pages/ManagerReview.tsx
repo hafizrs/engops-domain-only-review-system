@@ -8,6 +8,8 @@ type DimQ = { id: string; text: string; opts: string[] };
 type WizardDim = { key: string; label: string; weight: number; sub: string; badge: string; questions: DimQ[] };
 
 function computeScore(dims: WizardDim[], answers: Record<string, number>) {
+  if (!dims.length) return 0;
+  const equalWeight = 100 / dims.length;
   let s = 0;
   dims.forEach((d) => {
     let dSum = 0;
@@ -15,9 +17,18 @@ function computeScore(dims: WizardDim[], answers: Record<string, number>) {
       dSum += answers[q.id] ?? 0;
     });
     const avg = dSum / d.questions.length;
-    s += (avg / 5) * d.weight;
+    s += (avg / 5) * equalWeight;
   });
   return Math.round(s);
+}
+
+function shuffleArray<T>(items: T[]): T[] {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }
 
 export function ManagerReview() {
@@ -34,8 +45,9 @@ export function ManagerReview() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [revieweeName, setRevieweeName] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [finalScore, setFinalScore] = useState(0);
   const [submitErr, setSubmitErr] = useState('');
+  const [shuffledDims, setShuffledDims] = useState<WizardDim[]>([]);
+
 
   useEffect(() => {
     if (!code) return;
@@ -44,6 +56,15 @@ export function ManagerReview() {
       .then((r) => setForm(r.data))
       .catch(() => setLoadErr('Invalid or expired link'));
   }, [code]);
+
+  useEffect(() => {
+    if (!form?.questions?.dims) return;
+    const shuffled = form.questions.dims.map((d: any) => ({
+      ...d,
+      questions: d.questions.map((q: any) => ({ ...q, opts: shuffleArray(q.opts) })),
+    }));
+    setShuffledDims(shuffled);
+  }, [form, code]);
 
   useEffect(() => {
     const u = getUser();
@@ -59,9 +80,22 @@ export function ManagerReview() {
     }
   }, [submitted]);
 
-  const wizardDims: WizardDim[] = form?.questions?.dims || [];
+  const wizardDims: WizardDim[] = shuffledDims.length ? shuffledDims : form?.questions?.dims || [];
 
   const score = useMemo(() => computeScore(wizardDims, answers), [wizardDims, answers]);
+
+  const responsesByDim = useMemo(
+    () =>
+      wizardDims.map((d) => ({
+        d,
+        responses: d.questions.map((q) => ({
+          id: q.id,
+          text: q.text,
+          answerText: q.opts[answers[q.id] ?? 0] ?? 'No response selected',
+        })),
+      })),
+    [wizardDims, answers]
+  );
 
   async function doLogin() {
     setLoginErr('');
@@ -126,7 +160,6 @@ export function ManagerReview() {
         totalScore: total,
         revieweeName: r,
       });
-      setFinalScore(total);
       setSubmitted(true);
     } catch (e: any) {
       setSubmitErr(e.response?.data?.message || 'Submit failed');
@@ -200,13 +233,12 @@ export function ManagerReview() {
   }
 
   if (submitted) {
-    const band = finalScore >= 85 ? 'Excellent' : finalScore >= 70 ? 'Good' : finalScore >= 50 ? 'Needs Focus' : 'At Risk';
     return (
       <div className="screen-center">
         <div style={{ maxWidth: 440, width: '100%' }} className="anim">
           <div className="tick">✓</div>
           <div className="success-title">Review Submitted</div>
-          <div className="success-sub">Your performance review has been recorded successfully.</div>
+          <div className="success-sub">Your review has been recorded successfully.</div>
           <div className="result-table">
             <div className="rt-row">
               <span>Form</span>
@@ -219,12 +251,6 @@ export function ManagerReview() {
             <div className="rt-row">
               <span>Reviewer</span>
               <span>{me.name}</span>
-            </div>
-            <div className="rt-row">
-              <span>Final score</span>
-              <span style={{ color: 'var(--accent2)' }}>
-                {finalScore} / 100 — {band}
-              </span>
             </div>
             <div className="rt-row">
               <span>Submitted</span>
@@ -308,7 +334,7 @@ export function ManagerReview() {
       <div key={d.key} className="fw-dim-chip">
         <span className="fw-dim-name">{d.label}</span>
         <span style={{ fontFamily: 'DM Mono', fontSize: 10, color: 'var(--text3)' }}>
-          {d.weight}% · {d.questions.length} questions
+          {d.questions.length} questions
         </span>
       </div>
     ));
@@ -319,10 +345,10 @@ export function ManagerReview() {
         <div className="fw-role">
           Role being reviewed: <strong>{ROLE_LABELS[form.role] || form.role}</strong>
         </div>
-        <div className="fw-meta">{wizardDims.map((d) => <span key={d.key} className={'badge ' + d.badge}>{d.label} {d.weight}%</span>)}</div>
+        <div className="fw-meta">{wizardDims.map((d) => <span key={d.key} className={'badge ' + d.badge}>{d.label}</span>)}</div>
         <div className="fw-info">
           You will answer <strong>{wizardDims.reduce((s, d) => s + d.questions.length, 0)} questions</strong> across{' '}
-          <strong>{wizardDims.length} dimensions</strong>. Each question has 6 options scored 0–5. Your answers are weighted by dimension into a final score out of 100.
+          <strong>{wizardDims.length} dimensions</strong>. Each question has 6 options. Your responses are submitted as-is and recorded.
           <br />
           <br />
           Reviewee: <strong>{revieweeName.trim()}</strong> · Reviewer: <strong>{me.name}</strong>
@@ -354,7 +380,7 @@ export function ManagerReview() {
             <span className="step-num">
               DIMENSION {wizardStep - 1} OF {wizardDims.length}
             </span>
-            <span className={'badge ' + d.badge}>{d.weight}% weight</span>
+            <span className={'badge ' + d.badge}>{d.label}</span>
           </div>
           <div className="step-dim-name" style={{ color }}>
             {d.label}
@@ -384,7 +410,6 @@ export function ManagerReview() {
                   >
                     <div className="radio-eo" />
                     <div className="opt-body">{o}</div>
-                    <div className={'score-chip ' + (si === 0 ? 's0' : si === 5 ? 's5' : '')}>{si}/5</div>
                   </div>
                 ))}
               </div>
@@ -396,51 +421,6 @@ export function ManagerReview() {
   } else {
     showNext = false;
     showSubmit = true;
-    const dimScores = wizardDims.map((d) => {
-      let dSum = 0;
-      d.questions.forEach((q) => {
-        dSum += answers[q.id] ?? 0;
-      });
-      const avg = dSum / d.questions.length;
-      return { d, avg, pct: Math.round((avg / 5) * 100) };
-    });
-    const bandInfo =
-      score >= 85
-        ? { band: 'Excellent', color: 'var(--green)', note: 'This person is performing strongly for their role.' }
-        : score >= 70
-          ? { band: 'Good', color: 'var(--accent2)', note: 'Meets role expectations consistently.' }
-          : score >= 50
-            ? { band: 'Needs Focus', color: 'var(--amber)', note: 'Some coaching needed on role expectations.' }
-            : { band: 'At Risk', color: 'var(--red)', note: 'Significant gap from current-role expectations.' };
-
-    const summaryRows = dimScores.map(({ d, avg, pct: pc }) => {
-      const c = DIM_COLORS[d.key] || 'var(--accent2)';
-      return (
-        <div key={d.key} className="sum-row" onClick={() => jumpToDim(wizardDims.indexOf(d))}>
-          <div className="sum-left">
-            <div className="sum-icon" style={{ background: c + '20', color: c, border: `1px solid ${c}44` }}>
-              {d.label[0]}
-            </div>
-            <div>
-              <div className="sum-name">{d.label}</div>
-              <div className="sum-sub">
-                {d.weight}% weight · {d.questions.length} questions
-              </div>
-            </div>
-          </div>
-          <div className="sum-right">
-            <div className="sum-score-bar">
-              <div className="sum-score-fill" style={{ width: pc + '%', background: c }} />
-            </div>
-            <div className="sum-score-num" style={{ color: c }}>
-              {avg.toFixed(1)}
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>/5</span>
-            </div>
-            <div className="sum-edit">edit</div>
-          </div>
-        </div>
-      );
-    });
 
     body = (
       <>
@@ -449,7 +429,25 @@ export function ManagerReview() {
             <span className="step-num">FINAL STEP</span>
           </div>
           <div className="step-dim-name">Review & Submit</div>
-          <div className="step-dim-sub">Confirm participants and scores. Click a dimension to edit answers.</div>
+          <div className="step-dim-sub">Confirm participant details and submit your review.</div>
+        </div>
+
+        <div style={{ marginBottom: 24 }}>
+          {responsesByDim.map(({ d, responses }) => (
+            <div key={d.key} style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 10 }}>{d.label}</div>
+              <div style={{ display: 'grid', gap: 14 }}>
+                {responses.map((r, qi) => (
+                  <div key={r.id} style={{ padding: 14, border: '1px solid var(--border2)', borderRadius: 12, background: 'var(--s1)' }}>
+                    <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 8 }}>
+                      {qi + 1}. {r.text}
+                    </div>
+                    <div style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600, whiteSpace: 'pre-wrap' }}>{r.answerText}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="participant-card" style={{ marginBottom: 16 }}>
@@ -464,20 +462,6 @@ export function ManagerReview() {
           </div>
         </div>
 
-        <div className="final-score-card">
-          <div>
-            <div className="fsc-label">WEIGHTED SCORE</div>
-            <div className="fsc-num">{score}</div>
-            <div style={{ fontFamily: 'DM Mono', fontSize: 10, color: 'var(--text3)' }}>out of 100</div>
-          </div>
-          <div>
-            <div className="fsc-band" style={{ color: bandInfo.color }}>
-              {bandInfo.band}
-            </div>
-            <div className="fsc-note">{bandInfo.note}</div>
-          </div>
-        </div>
-        <div className="summary-grid">{summaryRows}</div>
         <div className="fw-info" style={{ fontSize: 12, color: 'var(--text3)' }}>
           {!revieweeName.trim() || !me?.name ? <strong style={{ color: 'var(--red)' }}>Fill reviewee name and ensure you are signed in as manager before submitting.</strong> : null}
           {submitErr && <div style={{ color: 'var(--red)', marginTop: 8 }}>{submitErr}</div>}

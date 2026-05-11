@@ -5,7 +5,7 @@ export const DIMS = [
   {
     key: 'technical_judgment',
     label: 'Technical Judgment & Knowledge',
-    weight: 22,
+    weight: 20,
     sub: 'Technical depth, system understanding, debugging, constraints, failure handling, and requirement validation.',
     badge: 'br',
     questions: [
@@ -98,7 +98,7 @@ export const DIMS = [
   {
     key: 'delivery_execution',
     label: 'Delivery & Execution Discipline',
-    weight: 24,
+    weight: 20,
     sub: 'Commitment, estimation, scope control, tracker hygiene, planning, follow-through, and pressure handling.',
     badge: 'bp',
     questions: [
@@ -296,7 +296,7 @@ export const DIMS = [
   {
     key: 'communication',
     label: 'Communication & Alignment',
-    weight: 17,
+    weight: 20,
     sub: 'Written clarity, meeting clarity, proactive updates, feedback handling, stakeholder communication, and cross-team alignment.',
     badge: 'bp',
     questions: [
@@ -389,7 +389,7 @@ export const DIMS = [
   {
     key: 'ownership_growth',
     label: 'Ownership, Teamwork & Growth',
-    weight: 17,
+    weight: 20,
     sub: 'Accountability, production ownership, collaboration, initiative, learning, process improvement, and team contribution.',
     badge: 'bg',
     questions: [
