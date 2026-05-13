@@ -4,7 +4,8 @@ import { api } from '../api/client';
 import { getUser, logout, setSession, type AuthUser } from '../auth/auth';
 import { DIM_COLORS, ROLE_LABELS } from '../questionBank';
 
-type DimQ = { id: string; text: string; opts: string[] };
+type DimOption = { label: string; value: number };
+type DimQ = { id: string; text: string; opts: DimOption[] };
 type WizardDim = { key: string; label: string; weight: number; sub: string; badge: string; questions: DimQ[] };
 
 function computeScore(dims: WizardDim[], answers: Record<string, number>) {
@@ -61,7 +62,10 @@ export function ManagerReview() {
     if (!form?.questions?.dims) return;
     const shuffled = form.questions.dims.map((d: any) => ({
       ...d,
-      questions: d.questions.map((q: any) => ({ ...q, opts: shuffleArray(q.opts) })),
+      questions: d.questions.map((q: any) => ({
+        ...q,
+        opts: shuffleArray(q.opts.map((opt: string, idx: number) => ({ label: opt, value: idx }))),
+      })),
     }));
     setShuffledDims(shuffled);
   }, [form, code]);
@@ -88,11 +92,14 @@ export function ManagerReview() {
     () =>
       wizardDims.map((d) => ({
         d,
-        responses: d.questions.map((q) => ({
-          id: q.id,
-          text: q.text,
-          answerText: q.opts[answers[q.id] ?? 0] ?? 'No response selected',
-        })),
+        responses: d.questions.map((q) => {
+          const selected = q.opts.find((o) => o.value === answers[q.id]);
+          return {
+            id: q.id,
+            text: q.text,
+            answerText: selected?.label ?? 'No response selected',
+          };
+        }),
       })),
     [wizardDims, answers]
   );
@@ -402,14 +409,14 @@ export function ManagerReview() {
                 <div className="wq-text">{q.text}</div>
               </div>
               <div className="opts-col">
-                {q.opts.map((o, si) => (
+                {q.opts.map((o) => (
                   <div
-                    key={si}
-                    className={'opt-eo ' + (answers[q.id] === si ? 'chosen' : '')}
-                    onClick={() => pick(q.id, si)}
+                    key={o.value}
+                    className={'opt-eo ' + (answers[q.id] === o.value ? 'chosen' : '')}
+                    onClick={() => pick(q.id, o.value)}
                   >
                     <div className="radio-eo" />
-                    <div className="opt-body">{o}</div>
+                    <div className="opt-body">{o.label}</div>
                   </div>
                 ))}
               </div>
