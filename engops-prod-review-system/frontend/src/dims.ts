@@ -32,12 +32,12 @@ export const DIMS = [
         id: 'tj1',
         text: 'Does the employee have the technical knowledge expected for their role and level?',
         opts: [
-          'Missing foundational knowledge; often blocked by basic technical gaps',
-          'Below expected level; relies heavily on others for routine concepts',
+          'Often blocked by basic technical gaps',
+          'Relies heavily on others for routine concepts',
           'Adequate for straightforward tasks but struggles with complex or unfamiliar work',
-          'Good foundation; handles most role-level problems independently',
-          'Strong technical depth; solves complex and new problems reliably',
-          'Expert-level; the go-to person for hard technical questions and mentoring others'
+          'Handles most role-level problems independently',
+          'Solves complex and new problems reliably',
+          'Go-to person for hard technical questions and mentoring others'
         ]
       },
       {
