@@ -46,6 +46,10 @@ export function AdminLayout() {
             <Link className={navActive('/admin/users', location.pathname) ? 'active' : ''} to="/admin/users">
               Users
             </Link>
+            <div className="nav-sep" />
+            <Link className={navActive('/admin/ai-evaluation', location.pathname) ? 'active' : ''} to="/admin/ai-evaluation">
+              AI Evaluation
+            </Link>
           </div>
         </div>
         <div className="nav-user-chip">

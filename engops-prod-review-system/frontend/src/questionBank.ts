@@ -9,11 +9,9 @@ export const ROLE_LABELS: Record<string, string> = {
 };
 
 export const DIM_COLORS: Record<string, string> = {
-  delivery: '#7B6EF6',
+  technical_judgment: '#F87171',
+  delivery_execution: '#7B6EF6',
   quality: '#2DD4BF',
-  execution: '#FBBF24',
-  decision: '#60A5FA',
-  ownership: '#34D399',
-  technical: '#F87171',
   communication: '#A89BFF',
+  ownership_growth: '#34D399',
 };

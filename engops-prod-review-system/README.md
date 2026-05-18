@@ -76,6 +76,41 @@ Required fields:
 
 7. Login as admin and check submissions.
 
+## 4. AI service (LangGraph + FastAPI)
+
+Third terminal:
+
+```bash
+cd ai-service
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --reload --port 8000
+```
+
+Add to `backend/.env`:
+
+```env
+AI_SERVICE_URL=http://localhost:8000
+AI_SERVICE_SECRET=dev-ai-secret-change-me
+```
+
+Match the same secret in `ai-service/.env`. Set `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_API_KEY`, and `AZURE_OPENAI_DEPLOYMENT_NAME` — summaries require Azure OpenAI.
+
+### AI evaluation API (admin JWT) — matches the AI Evaluation UI
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/ai-evaluations/health` | Nest → AI service connectivity |
+| POST | `/api/ai-evaluations/run` | `revieweeName`, `revieweeEmail`, `formIds[]`, optional `dateFrom` / `dateTo` |
+| GET | `/api/ai-evaluations/:id` | Get stored evaluation |
+| POST | `/api/ai-evaluations/:id/approve` | Manager approve |
+
+No review-cycle APIs yet — the frontend scopes evaluation by **selected forms + date range**, not by a named cycle.
+
+Frontend **AI Evaluation** loads review forms and submissions from the API, runs `POST /ai-evaluations/run` to generate drafts, and `POST /ai-evaluations/:id/approve` when the manager approves.
+
 ## Important security note
 
 Domain-only matching is okay for internal POC/local testing, but it does not prove the user owns the mailbox. For production, use Microsoft SSO or Email OTP.

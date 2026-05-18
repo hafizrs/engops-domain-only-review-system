@@ -30,3 +30,13 @@ lerna-debug.log*
 /engops-prod-review-system/backend/dist
 /engops-prod-review-system/backend/build
 /engops-prod-review-system/backend/tmp
+
+
+/engops-prod-review-system/ai-service/.venv
+/engops-prod-review-system/frontend/dist
+/engops-prod-review-system/frontend/build
+/engops-prod-review-system/frontend/tmp
+/engops-prod-review-system/backend/node_modules
+/engops-prod-review-system/backend/dist
+/engops-prod-review-system/backend/build
+/engops-prod-review-system/backend/tmp

@@ -1,0 +1,192 @@
+.perf-header h1 {
+  margin: 0 0 6px;
+  font-family: Syne, sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.perf-header p {
+  margin: 0;
+  color: var(--text3);
+  font-size: 13px;
+  max-width: 820px;
+}
+
+.perf-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.perf-kpi {
+  padding: 14px 16px;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+}
+
+.perf-kpi-val {
+  font-size: 26px;
+  font-weight: 800;
+  font-family: Syne, sans-serif;
+}
+
+.perf-kpi-label {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+.perf-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  padding: 16px;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  margin-bottom: 14px;
+}
+
+.perf-filters .ai-eval-field label {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.perf-filters select,
+.perf-filters input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--s2);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.perf-bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.perf-table-wrap {
+  overflow-x: auto;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+}
+
+.perf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.perf-table th {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text3);
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border2);
+  white-space: nowrap;
+}
+
+.perf-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: middle;
+}
+
+.perf-table tbody tr:hover td {
+  background: var(--s2);
+}
+
+.perf-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.perf-detail-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.perf-detail-tab {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: var(--s1);
+  color: var(--text3);
+  border-radius: 999px;
+}
+
+.perf-detail-tab.active {
+  background: var(--aglow);
+  color: var(--accent2);
+  border-color: var(--accent);
+}
+
+.perf-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .perf-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.perf-card {
+  padding: 16px 18px;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  margin-bottom: 14px;
+}
+
+.perf-card-title {
+  font-family: Syne, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.perf-cycle-card {
+  padding: 16px;
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  background: var(--s2);
+  margin-bottom: 10px;
+}
+
+.perf-cycle-card.active-cycle {
+  border-color: var(--accent);
+  background: var(--aglow);
+}

@@ -8,6 +8,7 @@ import { AdminReviewForms } from './pages/AdminReviewForms';
 import { AdminSubmissions } from './pages/AdminSubmissions';
 import { AdminSubmissionDetail } from './pages/AdminSubmissionDetail';
 import { AdminUsers } from './pages/AdminUsers';
+import { AdminAiEvaluation } from './pages/AdminAiEvaluation';
 import { Home } from './pages/Home';
 import { LoginPage } from './pages/LoginPage';
 import { ManagerReview } from './pages/ManagerReview';
@@ -27,6 +28,13 @@ function App() {
           <Route path="submissions/:code" element={<AdminSubmissionDetail />} />
           <Route path="submissions/:code/:submissionId" element={<AdminSubmissionDetail />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="ai-evaluation" element={<AdminAiEvaluation />} />
+          <Route path="allocation" element={<Navigate to="/admin/ai-evaluation" replace />} />
+          <Route path="resource-allocation" element={<Navigate to="/admin/ai-evaluation" replace />} />
+          <Route path="performance" element={<Navigate to="/admin/ai-evaluation" replace />} />
+          <Route path="performance/*" element={<Navigate to="/admin/ai-evaluation" replace />} />
+          <Route path="review-cycles" element={<Navigate to="/admin/ai-evaluation" replace />} />
+          <Route path="employees/*" element={<Navigate to="/admin/ai-evaluation" replace />} />
         </Route>
         <Route path="/review/:code" element={<ManagerReview />} />
         <Route path="*" element={<Navigate to="/" replace />} />

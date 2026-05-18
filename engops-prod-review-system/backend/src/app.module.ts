@@ -5,12 +5,17 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ReviewFormsModule } from './review-forms/review-forms.module';
 import { SubmissionsModule } from './submissions/submissions.module';
+import { AiEvaluationsModule } from './ai-evaluations/ai-evaluations.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({ inject: [ConfigService], useFactory: (c: ConfigService) => ({ uri: c.getOrThrow('MONGODB_URI') }) }),
-    AuthModule, UsersModule, ReviewFormsModule, SubmissionsModule,
+    AuthModule,
+    UsersModule,
+    ReviewFormsModule,
+    SubmissionsModule,
+    AiEvaluationsModule,
   ],
 })
 export class AppModule {}

@@ -28,6 +28,9 @@ export function AdminDashboard() {
           <Link to="/admin/submissions" className="secondary-btn" style={{ textDecoration: 'none' }}>
             View submissions
           </Link>
+          <Link to="/admin/ai-evaluation" className="secondary-btn" style={{ textDecoration: 'none' }}>
+            AI Evaluation
+          </Link>
         </div>
       </div>
 

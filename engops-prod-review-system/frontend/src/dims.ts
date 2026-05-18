@@ -1,6 +1,25 @@
 export type DimQuestion = { id: string; text: string; opts: string[] };
 export type DimensionDef = { key: string; label: string; weight: number; sub: string; badge: string; questions: DimQuestion[] };
 
+/** Canonical 5 performance dimensions — same keys/labels as review form builder */
+export const PERFORMANCE_DIMENSION_KEYS = [
+  'technical_judgment',
+  'delivery_execution',
+  'quality',
+  'communication',
+  'ownership_growth',
+] as const;
+
+export type PerformanceDimensionKey = (typeof PERFORMANCE_DIMENSION_KEYS)[number];
+
+export const PERFORMANCE_DIMENSION_LABELS: Record<PerformanceDimensionKey, string> = {
+  technical_judgment: 'Technical Judgment & Knowledge',
+  delivery_execution: 'Delivery & Execution Discipline',
+  quality: 'Quality & Maintainability',
+  communication: 'Communication & Alignment',
+  ownership_growth: 'Ownership, Teamwork & Growth',
+};
+
 export const DIMS = [
   {
     key: 'technical_judgment',
