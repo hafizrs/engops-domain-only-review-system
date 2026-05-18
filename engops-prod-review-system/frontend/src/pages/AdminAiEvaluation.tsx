@@ -100,10 +100,10 @@ export function AdminAiEvaluation() {
   return (
     <div className="anim">
       <div className="ai-eval-header">
-        <div style={{ fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 6 }}>
-          AI evaluation
-        </div>
-        <h1>Performance review from submissions</h1>
+        <p className="page-eyebrow">AI evaluation</p>
+        <h1 className="page-title" style={{ fontSize: 28 }}>
+          Performance review from submissions
+        </h1>
         <p>
           Select review forms and dates, generate AI drafts from those responses only, then review and approve. Manager
           approves; AI does not finalize outcomes.

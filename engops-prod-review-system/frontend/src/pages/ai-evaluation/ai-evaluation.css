@@ -27,7 +27,7 @@
 
 .ai-eval-sidebar-head h2 {
   margin: 0;
-  font-family: Syne, sans-serif;
+  font-family: Inter, sans-serif;
   font-size: 15px;
   font-weight: 800;
 }
@@ -79,7 +79,7 @@
 
 .ai-eval-header h1 {
   margin: 0 0 6px;
-  font-family: Syne, sans-serif;
+  font-family: Inter, sans-serif;
   font-size: 28px;
   font-weight: 800;
 }
@@ -118,7 +118,7 @@
 .ai-eval-tab.active {
   background: var(--aglow);
   color: var(--accent2);
-  border-color: rgba(123, 110, 246, 0.4);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 .ai-eval-panel {
@@ -139,7 +139,7 @@
 }
 
 .ai-eval-card-title {
-  font-family: Syne, sans-serif;
+  font-family: Inter, sans-serif;
   font-size: 15px;
   font-weight: 700;
   margin-bottom: 10px;
@@ -175,14 +175,14 @@
   gap: 20px;
   align-items: center;
   padding: 20px;
-  background: linear-gradient(135deg, rgba(123, 110, 246, 0.12), rgba(45, 212, 191, 0.06));
-  border: 1px solid rgba(123, 110, 246, 0.25);
+  background: var(--highlight-bg);
+  border: 1px solid var(--accent-border);
   border-radius: 14px;
   margin-bottom: 12px;
 }
 
 .ai-eval-big-score {
-  font-family: Syne, sans-serif;
+  font-family: Inter, sans-serif;
   font-size: 48px;
   font-weight: 800;
   line-height: 1;
@@ -214,7 +214,7 @@
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), var(--teal));
+  background: var(--accent);
 }
 
 .ai-eval-pill {
@@ -257,7 +257,7 @@
 .ai-eval-info.purple {
   background: var(--aglow);
   color: var(--accent2);
-  border: 1px solid rgba(123, 110, 246, 0.22);
+  border: 1px solid rgba(59, 130, 246, 0.22);
 }
 
 .ai-eval-info.amber {
@@ -349,7 +349,7 @@
 }
 
 .ai-eval-fit-score {
-  font-family: Syne, sans-serif;
+  font-family: Inter, sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: var(--teal);
@@ -438,7 +438,7 @@
 
 .ai-eval-workflow-tab {
   padding: 10px 18px;
-  font-family: Syne, sans-serif;
+  font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 700;
   border: 1px solid var(--border2);
@@ -457,7 +457,7 @@
 .ai-eval-workflow-tab.active {
   background: var(--aglow);
   color: var(--accent2);
-  border-color: rgba(123, 110, 246, 0.45);
+  border-color: rgba(59, 130, 246, 0.45);
 }
 
 .ai-eval-gen-scope {

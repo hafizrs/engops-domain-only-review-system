@@ -1,6 +1,6 @@
 .perf-header h1 {
   margin: 0 0 6px;
-  font-family: Syne, sans-serif;
+  font-family: Inter, sans-serif;
   font-size: 28px;
   font-weight: 800;
 }
@@ -29,7 +29,7 @@
 .perf-kpi-val {
   font-size: 26px;
   font-weight: 800;
-  font-family: Syne, sans-serif;
+  font-family: Inter, sans-serif;
 }
 
 .perf-kpi-label {
@@ -172,7 +172,7 @@
 }
 
 .perf-card-title {
-  font-family: Syne, sans-serif;
+  font-family: Inter, sans-serif;
   font-weight: 700;
   font-size: 14px;
   margin-bottom: 10px;

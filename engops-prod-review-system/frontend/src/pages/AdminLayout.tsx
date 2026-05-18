@@ -6,16 +6,30 @@ function navActive(path: string, current: string) {
   return current === path || current.startsWith(path + '/');
 }
 
+const PAGE_TITLES: Record<string, string> = {
+  '/admin/dashboard': 'Dashboard',
+  '/admin/create': 'Create review form',
+  '/admin/submissions': 'Submissions',
+  '/admin/users': 'Users',
+  '/admin/ai-evaluation': 'AI evaluation',
+};
+
+function pageTitle(pathname: string): string {
+  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
+  if (pathname.startsWith('/admin/submissions/')) return 'Submission detail';
+  return 'Admin';
+}
+
 export function AdminLayout() {
   const user = getUser();
   const location = useLocation();
+  const path = location.pathname;
 
   if (user?.role !== 'admin') {
     return (
       <div className="screen-login">
-        <div className="login-blob lb1" />
-        <div className="login-blob lb2" />
-        <div className="login-grid" />
+        <div className="login-ambient" aria-hidden="true" />
+        <div className="login-mesh" aria-hidden="true" />
         <div className="login-card anim">
           <p className="login-desc">Admin access required.</p>
           <Link to="/login?next=/admin/dashboard" className="primary-btn" style={{ display: 'inline-block', textAlign: 'center', textDecoration: 'none' }}>
@@ -26,43 +40,75 @@ export function AdminLayout() {
     );
   }
 
+  const link = (to: string, label: string, icon: string, featured?: boolean) => (
+    <Link
+      key={to}
+      to={to}
+      className={`admin-nav-link ${navActive(to, path) ? 'active' : ''} ${featured ? 'featured' : ''}`}
+    >
+      <span className="admin-nav-icon" aria-hidden="true">
+        {icon}
+      </span>
+      {label}
+    </Link>
+  );
+
   return (
-    <div className="admin-shell">
-      <nav className="nav-eo">
-        <div className="nav-left-eo">
+    <div className="admin-shell-v2">
+      <header className="admin-topbar">
+        <div className="admin-topbar-left">
           <div className="nav-mark-sm">EO</div>
-          <div className="nav-name-eo">EngOps</div>
           <div className="nav-sep" />
-          <div className="nav-links">
-            <Link className={navActive('/admin/dashboard', location.pathname) ? 'active' : ''} to="/admin/dashboard">
-              Dashboard
-            </Link>
-            <Link className={navActive('/admin/create', location.pathname) ? 'active' : ''} to="/admin/create">
-              Create Review Form
-            </Link>
-            <Link className={navActive('/admin/submissions', location.pathname) ? 'active' : ''} to="/admin/submissions">
-              Submissions
-            </Link>
-            <Link className={navActive('/admin/users', location.pathname) ? 'active' : ''} to="/admin/users">
-              Users
-            </Link>
-            <div className="nav-sep" />
-            <Link className={navActive('/admin/ai-evaluation', location.pathname) ? 'active' : ''} to="/admin/ai-evaluation">
-              AI Evaluation
-            </Link>
-          </div>
+          <span className="admin-topbar-page">{pageTitle(path)}</span>
         </div>
         <div className="nav-user-chip">
-          <div className="user-dot">{(user.name || user.email)[0].toUpperCase()}</div>
+          <div className="user-dot" aria-hidden="true">
+            {(user.name || user.email)[0].toUpperCase()}
+          </div>
           <span className="user-nm">{user.name || user.email}</span>
           <button type="button" className="signout-btn" onClick={() => logout()}>
             Sign out
           </button>
         </div>
-      </nav>
-      <main className="admin-main">
-        <Outlet />
-      </main>
+      </header>
+
+      <div className="admin-frame">
+        <aside className="admin-sidebar" aria-label="Admin navigation">
+          <div className="admin-sidebar-brand">
+            <div className="admin-sidebar-brand-row">
+              <div className="logo-mark">EO</div>
+              <div>
+                <div className="logo-text">EngOps</div>
+                <div className="logo-sub" style={{ marginTop: 0 }}>
+                  REVIEW SYSTEM
+                </div>
+              </div>
+            </div>
+            <div className="admin-sidebar-sub">Selise · Engineering Operations</div>
+          </div>
+
+          <nav className="admin-nav-group">
+            <div className="admin-nav-label">Operations</div>
+            {link('/admin/dashboard', 'Dashboard', 'DB')}
+            {link('/admin/create', 'Create review form', 'CF')}
+            {link('/admin/submissions', 'Submissions', 'SB')}
+            {link('/admin/users', 'Users', 'US')}
+          </nav>
+
+          <nav className="admin-nav-group">
+            <div className="admin-nav-label">Intelligence</div>
+            {link('/admin/ai-evaluation', 'AI evaluation', 'AI', true)}
+          </nav>
+
+          <div className="admin-sidebar-foot">
+            Scope evaluations by form + date until review cycles ship. Manager approval required before finalizing.
+          </div>
+        </aside>
+
+        <main className="admin-content">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

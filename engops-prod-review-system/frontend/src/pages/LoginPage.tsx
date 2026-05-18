@@ -25,15 +25,14 @@ export function LoginPage() {
 
   return (
     <div className="screen-login">
-      <div className="login-blob lb1" />
-      <div className="login-blob lb2" />
-      <div className="login-grid" />
+      <div className="login-ambient" aria-hidden="true" />
+      <div className="login-mesh" aria-hidden="true" />
       <div className="login-card anim">
         <div className="login-logo">
           <div className="logo-mark">EO</div>
           <div>
             <div className="logo-text">EngOps</div>
-            <div className="logo-sub">COMPANY EMAIL · DOMAIN LOGIN</div>
+            <div className="logo-sub">Selise domain sign-in</div>
           </div>
         </div>
         <div className="login-title">Sign In</div>

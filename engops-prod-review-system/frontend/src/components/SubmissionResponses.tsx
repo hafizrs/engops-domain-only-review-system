@@ -58,7 +58,7 @@ export function SubmissionResponses({
       </div>
       {[...byDim.entries()].map(([key, { label, rows }]) => {
         const sec = scoreByKey.get(key);
-        const color = DIM_COLORS[key] || '#7b6ef6';
+        const color = DIM_COLORS[key] || 'var(--accent)';
         return (
           <div key={key} style={{ border: '1px solid var(--border2)', borderRadius: 10, overflow: 'hidden' }}>
             <div

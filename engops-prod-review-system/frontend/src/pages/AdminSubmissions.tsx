@@ -10,56 +10,57 @@ export function AdminSubmissions() {
   }, []);
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 24 }}>
+    <div className="anim">
+      <header className="page-header">
         <div>
-          <div style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 6 }}>
-            Submissions
-          </div>
-          <h1 style={{ margin: 0, fontSize: 34 }}>Review submission list</h1>
-          <p style={{ marginTop: 10, color: 'var(--text3)', maxWidth: 620 }}>
-            Select a review link to open its submissions list on a dedicated page.
-          </p>
+          <p className="page-eyebrow">Submissions</p>
+          <h1 className="page-title">Review submission list</h1>
+          <p className="page-desc">Select a review link to open its submissions on a dedicated detail page.</p>
         </div>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Link to="/admin/create" className="secondary-btn" style={{ textDecoration: 'none' }}>
+        <div className="page-actions">
+          <Link to="/admin/create" className="secondary-btn">
             Create review form
           </Link>
-          <Link to="/admin/dashboard" className="secondary-btn" style={{ textDecoration: 'none' }}>
+          <Link to="/admin/dashboard" className="secondary-btn">
             Back to dashboard
           </Link>
         </div>
-      </div>
+      </header>
 
-      <div style={{ background: 'var(--s1)', border: '1px solid var(--border2)', borderRadius: 18, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="data-panel">
+        <table className="data-table">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border2)', textAlign: 'left', fontSize: 11, color: 'var(--text3)', fontFamily: 'DM Mono' }}>
-              <th style={{ padding: 14 }}>Code</th>
-              <th style={{ padding: 14 }}>Title</th>
-              <th style={{ padding: 14 }}>Role</th>
-              <th style={{ padding: 14 }}>Created</th>
-              <th style={{ padding: 14 }} />
+            <tr>
+              <th scope="col">Code</th>
+              <th scope="col">Title</th>
+              <th scope="col">Role</th>
+              <th scope="col">Created</th>
+              <th scope="col"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
           <tbody>
             {forms.map((f) => (
-              <tr key={f._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: 14, fontFamily: 'DM Mono', fontSize: 12 }}>{f.code}</td>
-                <td style={{ padding: 14 }}>{f.title}</td>
-                <td style={{ padding: 14 }}>{f.role}</td>
-                <td style={{ padding: 14, fontSize: 12, color: 'var(--text3)' }}>{new Date(f.createdAt).toLocaleString()}</td>
-                <td style={{ padding: 14 }}>
-                  <Link to={`/admin/submissions/${f.code}`} className="secondary-btn" style={{ textDecoration: 'none' }}>
+              <tr key={f._id}>
+                <td className="mono">{f.code}</td>
+                <td>{f.title}</td>
+                <td>{f.role}</td>
+                <td className="muted">{new Date(f.createdAt).toLocaleString()}</td>
+                <td>
+                  <Link to={`/admin/submissions/${f.code}`} className="secondary-btn">
                     Open submissions
                   </Link>
                 </td>
               </tr>
             ))}
             {forms.length === 0 && (
-              <tr>
-                <td colSpan={5} style={{ padding: 18, color: 'var(--text3)' }}>
-                  No review links available yet. Create one on the Create Review Form page.
+              <tr className="data-table-empty">
+                <td colSpan={5}>
+                  <div className="empty-state">
+                    <div className="empty-state-icon" aria-hidden="true">
+                      ◇
+                    </div>
+                    No review links yet. Create one on the Create Review Form page.
+                  </div>
                 </td>
               </tr>
             )}

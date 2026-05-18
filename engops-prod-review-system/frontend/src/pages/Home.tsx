@@ -6,9 +6,8 @@ export function Home() {
   const u = getUser();
   return (
     <div className="screen-login">
-      <div className="login-blob lb1" />
-      <div className="login-blob lb2" />
-      <div className="login-grid" />
+      <div className="login-ambient" aria-hidden="true" />
+      <div className="login-mesh" aria-hidden="true" />
       <div className="login-card anim" style={{ maxWidth: 440 }}>
         <div className="login-logo">
           <div className="logo-mark">EO</div>
