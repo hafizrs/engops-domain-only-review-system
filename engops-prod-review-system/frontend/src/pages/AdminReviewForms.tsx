@@ -1,6 +1,7 @@
-﻿import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
+import { ReviewFormsTable } from '../components/ReviewFormsTable';
 import { DIMS, type DimensionDef } from '../questionBank';
 
 type Sel = Record<string, Set<string>>;
@@ -22,7 +23,6 @@ export function AdminReviewForms() {
   const [createdUrl, setCreatedUrl] = useState('');
   const [createdCode, setCreatedCode] = useState('');
   const [copyFlash, setCopyFlash] = useState('');
-  const [copiedId, setCopiedId] = useState<string>('');
 
   useEffect(() => {
     loadForms();
@@ -84,118 +84,97 @@ export function AdminReviewForms() {
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(createdUrl);
-      setCopyFlash('✓ Link copied to clipboard');
+      setCopyFlash('? Link copied to clipboard');
       setTimeout(() => setCopyFlash(''), 2500);
     } catch {
-      setCopyFlash('Copy failed — select the URL manually.');
+      setCopyFlash('Copy failed ? select the URL manually.');
     }
   }
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', padding: '32px 16px', display: 'flex', flexDirection: 'column', gap: 32 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+    <div className="anim create-page">
+      <header className="page-header">
         <div>
-          <div style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>
-            Create Review Form
-          </div>
-          <h1 style={{ margin: 0, fontSize: 34 }}>Build and publish a review link</h1>
-          <p style={{ marginTop: 10, color: 'var(--text3)', maxWidth: 650 }}>
-            Choose questions, generate a review link, and manage review forms from separate admin pages.
+          <p className="page-eyebrow">Create review form</p>
+          <h1 className="page-title">Build and publish a review link</h1>
+          <p className="page-desc">
+            Select 5 questions per dimension, generate a link, then share it with managers. Published links appear in
+            the table below.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Link to="/admin/submissions" className="secondary-btn" style={{ textDecoration: 'none' }}>
+        <div className="page-actions">
+          <Link to="/admin/submissions" className="btn btn-outline btn-md">
             Submissions
           </Link>
-          <Link to="/admin/dashboard" className="secondary-btn" style={{ textDecoration: 'none' }}>
+          <Link to="/admin/dashboard" className="btn btn-outline btn-md">
             Dashboard
           </Link>
         </div>
-      </div>
+      </header>
 
-      <div className="form-meta" style={{ background: 'var(--card-bg)', padding: 24, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-        <div className="fld">
-          <label htmlFor="review-title">Review Form Title</label>
-          <input id="review-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Q2 2025 Mid-Cycle Review" style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 14, marginTop: 8 }} />
-        </div>
-        <div className="meta-actions" style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
-          <div className="fld" style={{ minWidth: 180 }}>
-            <label htmlFor="target-role">Target Role</label>
-            <select id="target-role" value={role} onChange={(e) => setRole(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 14, marginTop: 8 }}>
-              <option value="junior">Junior Engineer</option>
-              <option value="mid">Mid Engineer</option>
-              <option value="senior">Senior Engineer</option>
-              <option value="lead">Lead / Staff</option>
-              <option value="manager">Eng. Manager</option>
-            </select>
+      <section className="create-form-card" aria-labelledby="create-form-settings">
+        <h2 id="create-form-settings" className="create-form-card-title">
+          Form settings
+        </h2>
+        <div className="form-meta">
+          <div className="fld">
+            <label htmlFor="review-title">Review form title</label>
+            <input
+              id="review-title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Q2 2025 Mid-Cycle Review"
+            />
           </div>
-          <button type="button" className="secondary-btn" onClick={autoSelect}>
-            Auto-select 5 each
-          </button>
-          <button type="button" className="secondary-btn" onClick={clearSel}>
-            Clear
-          </button>
-          <button type="button" className="gen-btn" disabled={!canGenerate} onClick={generateLink}>
-            Generate Review Link
-          </button>
+          <div className="meta-actions">
+            <div className="fld">
+              <label htmlFor="target-role">Target role</label>
+              <select id="target-role" value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="junior">Junior Engineer</option>
+                <option value="mid">Mid Engineer</option>
+                <option value="senior">Senior Engineer</option>
+                <option value="lead">Lead / Staff</option>
+                <option value="manager">Eng. Manager</option>
+              </select>
+            </div>
+            <button type="button" className="btn btn-outline btn-md" onClick={autoSelect}>
+              Auto-select 5 each
+            </button>
+            <button type="button" className="btn btn-ghost btn-md" onClick={clearSel}>
+              Clear
+            </button>
+            <button type="button" className="gen-btn" disabled={!canGenerate} onClick={generateLink}>
+              Generate review link
+            </button>
+          </div>
         </div>
-      </div>
+        {!canGenerate && (
+          <p className="create-form-hint">
+            Select exactly <strong>5 questions</strong> in each of the {DIMS.length} dimensions to enable generate (
+            {readyDims}/{DIMS.length} ready).
+          </p>
+        )}
+      </section>
 
-      {DIMS.map((d) => (
-        <DimPanel key={d.key} dim={d} active={true} sel={sel[d.key]} onToggle={toggleQ} />
-      ))}
+      <section className="create-page-section" aria-label="Question selection">
+        {DIMS.map((d) => (
+          <DimPanel key={d.key} dim={d} active sel={sel[d.key]} onToggle={toggleQ} />
+        ))}
+      </section>
 
-      <div style={{ marginTop: 28, background: 'var(--card-bg)', padding: 24, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-        <h3 style={{ fontFamily: 'Syne', fontSize: 18, marginBottom: 16 }}>Existing links</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 12 }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border2)', textAlign: 'left', fontSize: 11, color: 'var(--text3)', fontFamily: 'DM Mono' }}>
-              <th style={{ padding: 8 }}>Code</th>
-              <th style={{ padding: 8 }}>Title</th>
-              <th style={{ padding: 8 }}>Role</th>
-              <th style={{ padding: 8 }}>Created</th>
-              <th style={{ padding: 8 }} />
-            </tr>
-          </thead>
-          <tbody>
-            {forms.map((f) => {
-              const reviewUrl = `${globalThis.location.origin}/review/${f.code}`;
-              return (
-                <tr key={f._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td style={{ padding: 8, fontFamily: 'DM Mono', fontSize: 12 }}>{f.code}</td>
-                  <td style={{ padding: 8 }}>{f.title}</td>
-                  <td style={{ padding: 8 }}>{f.role}</td>
-                  <td style={{ padding: 8, fontSize: 12, color: 'var(--text3)' }}>{new Date(f.createdAt).toLocaleString()}</td>
-                  <td style={{ padding: 8, display: 'flex', gap: 8 }}>
-                    <button
-                      type="button"
-                      className="secondary-btn"
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(reviewUrl);
-                          setCopiedId(f._id);
-                          setTimeout(() => setCopiedId(''), 2000);
-                        } catch {
-                          // fallback
-                        }
-                      }}
-                    >
-                      {copiedId === f._id ? 'Copied!' : 'Copy Link'}
-                    </button>
-                    <Link to={`/admin/submissions/${f.code}`} className="secondary-btn" style={{ textDecoration: 'none' }}>
-                      Submissions
-                    </Link>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <section className="create-page-section" aria-label="Published review links">
+        <ReviewFormsTable
+          forms={forms}
+          panelTitle="Existing links"
+          primaryActionLabel="Submissions"
+          showCopyLink
+          emptyMessage="No links yet. Complete the form above and click Generate review link."
+        />
+      </section>
 
       <div className={'overlay' + (modalOpen ? ' open' : '')}>
         <div className="modal-eo">
-          <h2>🔗 Review Link Ready</h2>
+          <h2>Review link ready</h2>
           <div className="modal-sub">Share this code or copy the full URL for managers.</div>
           <div className="link-code">{createdCode}</div>
           <div className="link-display">
@@ -214,7 +193,17 @@ export function AdminReviewForms() {
   );
 }
 
-function DimPanel({ dim, active, sel, onToggle }: { readonly dim: DimensionDef; readonly active: boolean; readonly sel: Set<string>; readonly onToggle: (k: string, id: string) => void }) {
+function DimPanel({
+  dim,
+  active,
+  sel,
+  onToggle,
+}: {
+  readonly dim: DimensionDef;
+  readonly active: boolean;
+  readonly sel: Set<string>;
+  readonly onToggle: (k: string, id: string) => void;
+}) {
   return (
     <div className={'dim-panel' + (active ? ' active' : '')}>
       <div className="dim-head">
@@ -224,10 +213,8 @@ function DimPanel({ dim, active, sel, onToggle }: { readonly dim: DimensionDef; 
       <div className="dim-meta">{dim.sub}</div>
       <div className="q-status-bar">
         <div>
-          <div style={{ fontFamily: 'DM Mono', fontSize: 9, color: 'var(--text3)', letterSpacing: '0.1em', marginBottom: 2 }}>SELECTED</div>
-          <div className={'q-status-num' + (sel.size === 5 ? ' done' : '')}>
-            {sel.size} / 5
-          </div>
+          <div className="q-status-label">Selected</div>
+          <div className={'q-status-num' + (sel.size === 5 ? ' done' : '')}>{sel.size} / 5</div>
         </div>
         <div className="q-status-text">Click questions below to select exactly 5 for managers to answer.</div>
       </div>
@@ -239,20 +226,24 @@ function DimPanel({ dim, active, sel, onToggle }: { readonly dim: DimensionDef; 
             <button
               key={q.id}
               type="button"
+              disabled={locked}
               className={'q-card' + (isSel ? ' selected' : '') + (locked ? ' locked' : '')}
-              onClick={() => !locked && onToggle(dim.key, q.id)}
+              onClick={() => onToggle(dim.key, q.id)}
             >
               <div className="q-row">
-                <div className="q-check">{isSel ? '✓' : ''}</div>
+                <div className="q-check">{isSel ? '?' : ''}</div>
                 <div className="q-text">{q.text}</div>
               </div>
-                      <div className="q-preview">
+              <div className="q-preview">
                 {q.opts.map((opt, si) => (
                   <span key={si} className={`prev-chip ${si === 0 ? 'lo' : si === 5 ? 'hi' : ''}`}>
-                    {si} · {opt}
+                    {si} ? {opt}
                   </span>
                 ))}
               </div>
+              {locked && (
+                <div className="q-card-locked-hint">Maximum 5 selected ? deselect one to choose another</div>
+              )}
             </button>
           );
         })}

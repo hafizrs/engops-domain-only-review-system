@@ -15,6 +15,7 @@
   background: var(--s1);
   border: 1px solid var(--border2);
   border-radius: 16px;
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
   position: sticky;
   top: 80px;
@@ -52,7 +53,7 @@
 
 .ai-eval-emp-btn.active {
   background: var(--aglow);
-  color: var(--accent2);
+  color: var(--accent);
   border-left: 3px solid var(--accent);
 }
 
@@ -86,9 +87,32 @@
 
 .ai-eval-header p {
   margin: 0;
-  color: var(--text3);
+  color: var(--text2);
   font-size: 13px;
   max-width: 720px;
+  line-height: 1.6;
+}
+
+.ai-eval-employee-banner {
+  margin-bottom: 16px;
+  padding: 14px 18px;
+  background: var(--s1);
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  box-shadow: var(--shadow-sm);
+}
+
+.ai-eval-employee-banner h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ai-eval-employee-banner p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text2);
 }
 
 .ai-eval-tabs {
@@ -101,24 +125,27 @@
 .ai-eval-tab {
   padding: 8px 14px;
   font-size: 12px;
-  font-family: 'DM Mono', monospace;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
   cursor: pointer;
-  border: 1px solid var(--border2);
+  border: 1.5px solid var(--border2);
   background: var(--s1);
-  color: var(--text3);
+  color: var(--text2);
   border-radius: 999px;
   transition: 0.15s;
 }
 
 .ai-eval-tab:hover {
-  color: var(--text2);
+  color: var(--text);
   border-color: var(--border3);
+  background: var(--s2);
 }
 
 .ai-eval-tab.active {
-  background: var(--aglow);
-  color: var(--accent2);
-  border-color: rgba(59, 130, 246, 0.4);
+  background: var(--highlight-bg);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
 }
 
 .ai-eval-panel {
@@ -136,6 +163,7 @@
   border-radius: 14px;
   padding: 18px 20px;
   margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
 }
 
 .ai-eval-card-title {
@@ -255,27 +283,37 @@
 }
 
 .ai-eval-info.purple {
-  background: var(--aglow);
-  color: var(--accent2);
-  border: 1px solid rgba(59, 130, 246, 0.22);
+  background: var(--bbg);
+  color: var(--blue-text);
+  border: 1px solid var(--bborder);
+  font-weight: 500;
 }
 
 .ai-eval-info.amber {
   background: var(--abg);
-  color: var(--amber);
+  color: var(--amber-text);
   border: 1px solid var(--aborder);
+  font-weight: 500;
 }
 
 .ai-eval-info.teal {
   background: var(--tbg);
-  color: var(--teal);
+  color: var(--teal-text);
   border: 1px solid var(--tborder);
+  font-weight: 500;
 }
 
 .ai-eval-info.red {
   background: var(--rbg);
-  color: var(--red);
+  color: var(--red-text);
   border: 1px solid var(--rborder);
+  font-weight: 500;
+}
+
+.ai-eval-info {
+  color: var(--text2);
+  border: 1px solid var(--border2);
+  background: var(--s2);
 }
 
 .ai-eval-form-grid {
@@ -292,11 +330,10 @@
 
 .ai-eval-field label {
   display: block;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text3);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
   margin-bottom: 6px;
 }
 
@@ -440,24 +477,32 @@
   padding: 10px 18px;
   font-family: Inter, sans-serif;
   font-size: 13px;
-  font-weight: 700;
-  border: 1px solid var(--border2);
+  font-weight: 600;
+  border: 1.5px solid var(--border2);
   background: var(--s1);
-  color: var(--text3);
+  color: var(--text2);
   border-radius: 10px;
   cursor: pointer;
   transition: 0.15s;
 }
 
-.ai-eval-workflow-tab:hover {
-  color: var(--text2);
+.ai-eval-workflow-tab:hover:not(:disabled) {
+  color: var(--text);
   border-color: var(--border3);
+  background: var(--s2);
 }
 
 .ai-eval-workflow-tab.active {
-  background: var(--aglow);
-  color: var(--accent2);
-  border-color: rgba(59, 130, 246, 0.45);
+  background: var(--highlight-bg);
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+.ai-eval-workflow-tab:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  color: var(--text3);
 }
 
 .ai-eval-gen-scope {
@@ -614,12 +659,13 @@
 }
 
 .ai-eval-admin-bar-label {
-  font-size: 10px;
-  font-family: 'DM Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
   color: var(--text3);
   margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .ai-eval-admin-bar-stats {
@@ -639,27 +685,43 @@
   gap: 10px;
   align-items: flex-start;
   padding: 12px 14px;
-  border: 1px solid var(--border2);
+  border: 1.5px solid var(--border2);
   border-radius: 10px;
   cursor: pointer;
-  background: var(--s2);
-  transition: border-color 0.15s, background 0.15s;
+  background: var(--s1);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.ai-eval-form-pick strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ai-eval-form-pick input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
 }
 
 .ai-eval-form-pick.checked {
   border-color: var(--accent);
-  background: var(--aglow);
+  background: var(--highlight-bg);
+  box-shadow: 0 0 0 1px var(--accent-border);
 }
 
 .ai-eval-form-pick.disabled {
-  opacity: 0.45;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
 .ai-eval-form-pick-meta {
-  font-size: 11px;
-  color: var(--text3);
+  font-size: 12px;
+  color: var(--text2);
   margin-top: 4px;
+  line-height: 1.45;
 }
 
 .ai-eval-flow-hint {
@@ -667,9 +729,13 @@
   padding: 14px 16px;
   border-radius: 10px;
   background: var(--s2);
-  border: 1px dashed var(--border2);
+  border: 1px solid var(--border2);
   font-size: 13px;
   color: var(--text2);
+}
+
+.ai-eval-flow-hint strong {
+  color: var(--text);
 }
 
 .ai-eval-flow-hint ol {

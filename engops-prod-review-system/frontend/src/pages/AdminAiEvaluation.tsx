@@ -195,15 +195,15 @@ export function AdminAiEvaluation() {
                 style={{
                   marginBottom: 16,
                   padding: '14px 18px',
-                  background: 'var(--s2)',
+                  background: 'var(--s1)',
                   borderRadius: 12,
                   border: '1px solid var(--border2)',
                 }}
               >
-                <div style={{ fontWeight: 700, fontSize: 16 }}>{employee.employeeName}</div>
-                <div style={{ fontSize: 13, color: 'var(--text3)' }}>
+                <h3 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{employee.employeeName}</h3>
+                <p style={{ margin: 0, fontSize: 13, color: 'var(--text2)' }}>
                   {employee.title} · {employee.department} · {employee.submissionCount} submission(s) in scope
-                </div>
+                </p>
                 <div style={{ marginTop: 8 }}>
                   {employee.techStack.map((t) => (
                     <span key={t} className="ai-eval-pill">

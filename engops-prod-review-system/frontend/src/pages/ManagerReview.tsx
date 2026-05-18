@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { getUser, logout, setSession, type AuthUser } from '../auth/auth';
 import { DIM_COLORS, ROLE_LABELS } from '../questionBank';
+import { BrandLogo } from '../components/BrandLogo';
 
 type DimOption = { label: string; value: number };
 type DimQ = { id: string; text: string; opts: DimOption[] };
@@ -200,11 +201,7 @@ export function ManagerReview() {
         <div className="login-grid" />
         <div className="access-card anim">
           <div className="login-logo">
-            <div className="logo-mark">EO</div>
-            <div>
-              <div className="logo-text">EngOps</div>
-              <div className="logo-sub">MANAGER REVIEW · SIGN IN</div>
-            </div>
+            <BrandLogo variant="full" tagline="Manager review · sign in" />
           </div>
           <div className="login-title">Manager Sign In</div>
           <div className="login-desc">Sign in with your company email to complete this review.</div>
@@ -242,7 +239,7 @@ export function ManagerReview() {
   if (submitted) {
     return (
       <div className="screen-center">
-        <div style={{ maxWidth: 440, width: '100%' }} className="anim">
+        <div className="success-panel anim">
           <div className="tick">✓</div>
           <div className="success-title">Review Submitted</div>
           <div className="success-sub">Your review has been recorded successfully.</div>
@@ -481,8 +478,10 @@ export function ManagerReview() {
     <div className="form-shell">
       <nav className="form-nav">
         <div className="nav-left-eo">
-          <div className="nav-mark-sm">EO</div>
-          <div className="nav-name-eo">EngOps</div>
+          <span className="nav-mark-sm">
+            <BrandLogo variant="mark" />
+          </span>
+          <div className="nav-name-eo">Review</div>
           <div className="nav-sep" />
           <div style={{ fontFamily: 'DM Mono', fontSize: 11, color: 'var(--text3)' }}>
             <span className="pulse-dot" />

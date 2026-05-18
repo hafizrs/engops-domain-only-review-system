@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getUser, logout } from '../auth/auth';
+import { BrandLogo } from '../components/BrandLogo';
 
 export function Home() {
   const u = getUser();
@@ -10,11 +11,7 @@ export function Home() {
       <div className="login-mesh" aria-hidden="true" />
       <div className="login-card anim" style={{ maxWidth: 440 }}>
         <div className="login-logo">
-          <div className="logo-mark">EO</div>
-          <div>
-            <div className="logo-text">EngOps</div>
-            <div className="logo-sub">REVIEW SYSTEM</div>
-          </div>
+          <BrandLogo variant="full" tagline="Performance reviews · Selise" />
         </div>
         <div className="login-title">Welcome</div>
         <div className="login-desc">

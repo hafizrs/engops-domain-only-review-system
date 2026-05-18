@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
+import { ReviewFormsTable } from '../components/ReviewFormsTable';
 
 export function AdminDashboard() {
   const [forms, setForms] = useState<any[]>([]);
@@ -20,13 +21,13 @@ export function AdminDashboard() {
           </p>
         </div>
         <div className="page-actions">
-          <Link to="/admin/create" className="primary-btn">
+          <Link to="/admin/create" className="btn btn-primary btn-md">
             Create review form
           </Link>
-          <Link to="/admin/submissions" className="secondary-btn">
+          <Link to="/admin/submissions" className="btn btn-outline btn-md">
             View submissions
           </Link>
-          <Link to="/admin/ai-evaluation" className="secondary-btn">
+          <Link to="/admin/ai-evaluation" className="btn btn-outline btn-md">
             AI evaluation
           </Link>
         </div>
@@ -52,47 +53,13 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      <h2 className="section-title">Existing review links</h2>
-      <div className="data-panel">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th scope="col">Code</th>
-              <th scope="col">Title</th>
-              <th scope="col">Role</th>
-              <th scope="col">Created</th>
-              <th scope="col"><span className="sr-only">Actions</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            {forms.map((f) => (
-              <tr key={f._id}>
-                <td className="mono">{f.code}</td>
-                <td>{f.title}</td>
-                <td>{f.role}</td>
-                <td className="muted">{new Date(f.createdAt).toLocaleString()}</td>
-                <td>
-                  <Link to={`/admin/submissions/${f.code}`} className="secondary-btn">
-                    Submissions
-                  </Link>
-                </td>
-              </tr>
-            ))}
-            {forms.length === 0 && (
-              <tr className="data-table-empty">
-                <td colSpan={5}>
-                  <div className="empty-state">
-                    <div className="empty-state-icon" aria-hidden="true">
-                      ◇
-                    </div>
-                    No review links yet. Create a form to generate a shareable reviewer link.
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <ReviewFormsTable
+        forms={forms}
+        panelTitle="Existing review links"
+        primaryActionLabel="Submissions"
+        showCopyLink
+        emptyMessage="No review links yet. Create a form to generate a shareable reviewer link."
+      />
     </div>
   );
 }

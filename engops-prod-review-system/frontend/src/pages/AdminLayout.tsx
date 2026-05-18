@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { BrandLogo } from '../components/BrandLogo';
 import { getUser, logout } from '../auth/auth';
 
 function navActive(path: string, current: string) {
@@ -57,7 +58,9 @@ export function AdminLayout() {
     <div className="admin-shell-v2">
       <header className="admin-topbar">
         <div className="admin-topbar-left">
-          <div className="nav-mark-sm">EO</div>
+          <span className="nav-mark-sm">
+            <BrandLogo variant="mark" />
+          </span>
           <div className="nav-sep" />
           <span className="admin-topbar-page">{pageTitle(path)}</span>
         </div>
@@ -76,15 +79,8 @@ export function AdminLayout() {
         <aside className="admin-sidebar" aria-label="Admin navigation">
           <div className="admin-sidebar-brand">
             <div className="admin-sidebar-brand-row">
-              <div className="logo-mark">EO</div>
-              <div>
-                <div className="logo-text">EngOps</div>
-                <div className="logo-sub" style={{ marginTop: 0 }}>
-                  REVIEW SYSTEM
-                </div>
-              </div>
+              <BrandLogo variant="compact" tagline="Selise · Engineering Operations" />
             </div>
-            <div className="admin-sidebar-sub">Selise · Engineering Operations</div>
           </div>
 
           <nav className="admin-nav-group">
@@ -100,8 +96,8 @@ export function AdminLayout() {
             {link('/admin/ai-evaluation', 'AI evaluation', 'AI', true)}
           </nav>
 
-          <div className="admin-sidebar-foot">
-            Scope evaluations by form + date until review cycles ship. Manager approval required before finalizing.
+          <div className="admin-sidebar-foot" title="Scope by form & date · manager approval required">
+            Scope by form & date · manager approval required
           </div>
         </aside>
 

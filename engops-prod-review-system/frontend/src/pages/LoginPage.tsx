@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { setSession } from '../auth/auth';
+import { BrandLogo } from '../components/BrandLogo';
 
 export function LoginPage() {
   const [search] = useSearchParams();
@@ -29,11 +30,7 @@ export function LoginPage() {
       <div className="login-mesh" aria-hidden="true" />
       <div className="login-card anim">
         <div className="login-logo">
-          <div className="logo-mark">EO</div>
-          <div>
-            <div className="logo-text">EngOps</div>
-            <div className="logo-sub">Selise domain sign-in</div>
-          </div>
+          <BrandLogo variant="full" tagline="Selise domain sign-in" />
         </div>
         <div className="login-title">Sign In</div>
         <div className="login-desc">Use your @selisegroup.com email. Choose Admin to build review links, or Manager to submit reviews.</div>
