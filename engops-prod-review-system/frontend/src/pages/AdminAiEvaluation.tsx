@@ -3,7 +3,6 @@ import type { ScopedEmployee } from '../data/evaluationData';
 import { AdminContextBar } from './ai-evaluation/AdminContextBar';
 import { AiInsightsPanel } from './ai-evaluation/AiInsightsPanel';
 import { BehavioralPanel } from './ai-evaluation/BehavioralPanel';
-import { DecisionPanel } from './ai-evaluation/DecisionPanel';
 import { EmployeeSidebar } from './ai-evaluation/EmployeeSidebar';
 import { GeneratePanel, type GenerateScope } from './ai-evaluation/GeneratePanel';
 import { PerformancePanel } from './ai-evaluation/PerformancePanel';
@@ -13,7 +12,7 @@ import { useEvaluationData } from './ai-evaluation/useEvaluationData';
 import './ai-evaluation/ai-evaluation.css';
 
 type Workflow = 'setup' | 'generate' | 'review';
-type ReviewTab = 'evidence' | 'performance' | 'behavioral' | 'ai-insights' | 'decision';
+type ReviewTab = 'evidence' | 'performance' | 'behavioral' | 'ai-insights';
 
 const WORKFLOWS: { id: Workflow; label: string }[] = [
   { id: 'setup', label: '1 · Scope' },
@@ -26,7 +25,6 @@ const REVIEW_TABS: { id: ReviewTab; label: string }[] = [
   { id: 'performance', label: 'Performance' },
   { id: 'behavioral', label: 'Behavioral' },
   { id: 'ai-insights', label: 'AI insights' },
-  { id: 'decision', label: 'Decision' },
 ];
 
 export function AdminAiEvaluation() {
@@ -46,7 +44,6 @@ export function AdminAiEvaluation() {
     streamMessage,
     stored,
     generateForEmployees,
-    updateStoredStatus,
   } = useEvaluationData();
 
   const [workflow, setWorkflow] = useState<Workflow>('setup');
@@ -54,8 +51,6 @@ export function AdminAiEvaluation() {
   const [selectedKey, setSelectedKey] = useState('');
   const [generateScope, setGenerateScope] = useState<GenerateScope>('single');
   const [generating, setGenerating] = useState(false);
-  const [managerDecision, setManagerDecision] = useState<'pending' | 'approved' | 'override'>('pending');
-  const [overrideReason, setOverrideReason] = useState('');
 
   useEffect(() => {
     if (!scopedEmployees.length) {
@@ -241,24 +236,6 @@ export function AdminAiEvaluation() {
               </div>
               <div className={`ai-eval-panel ${reviewTab === 'ai-insights' ? 'active' : ''}`}>
                 <AiInsightsPanel employee={employee} />
-              </div>
-              <div className={`ai-eval-panel ${reviewTab === 'decision' ? 'active' : ''}`}>
-                <DecisionPanel
-                  employee={employee}
-                  managerDecision={managerDecision}
-                  setManagerDecision={(v) => {
-                    setManagerDecision(v);
-                    if (v === 'approved') {
-                      void updateStoredStatus(employee.employeeKey, 'approved').catch(() => {});
-                    }
-                    if (v === 'override') {
-                      void updateStoredStatus(employee.employeeKey, 'override', overrideReason).catch(() => {});
-                    }
-                  }}
-                  overrideReason={overrideReason}
-                  setOverrideReason={setOverrideReason}
-                  hasOverride={employee.storedEval?.status === 'override'}
-                />
               </div>
             </>
           )}

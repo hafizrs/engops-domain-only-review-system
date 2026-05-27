@@ -87,6 +87,9 @@ const BEHAVIORAL_KEYS = new Set([
   'crisis_anchor',
   'async_specialist',
   'steady_executor',
+  'technical_specialist',
+  'quiet_contributor',
+  'process_champion',
 ]);
 
 function parseBehavioralProfile(v?: string): BehavioralProfile {

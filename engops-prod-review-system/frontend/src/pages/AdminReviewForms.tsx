@@ -84,10 +84,10 @@ export function AdminReviewForms() {
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(createdUrl);
-      setCopyFlash('? Link copied to clipboard');
+      setCopyFlash('Link copied to clipboard');
       setTimeout(() => setCopyFlash(''), 2500);
     } catch {
-      setCopyFlash('Copy failed ? select the URL manually.');
+      setCopyFlash('Copy failed — select the URL manually.');
     }
   }
 
@@ -231,18 +231,19 @@ function DimPanel({
               onClick={() => onToggle(dim.key, q.id)}
             >
               <div className="q-row">
-                <div className="q-check">{isSel ? '?' : ''}</div>
+                <div className="q-check">{isSel ? '✓' : ''}</div>
                 <div className="q-text">{q.text}</div>
               </div>
               <div className="q-preview">
                 {q.opts.map((opt, si) => (
                   <span key={si} className={`prev-chip ${si === 0 ? 'lo' : si === 5 ? 'hi' : ''}`}>
-                    {si} ? {opt}
+                    <span className="prev-chip-score">{si}</span>
+                    <span className="prev-chip-label">{opt}</span>
                   </span>
                 ))}
               </div>
               {locked && (
-                <div className="q-card-locked-hint">Maximum 5 selected ? deselect one to choose another</div>
+                <div className="q-card-locked-hint">Maximum 5 selected — deselect one to choose another</div>
               )}
             </button>
           );

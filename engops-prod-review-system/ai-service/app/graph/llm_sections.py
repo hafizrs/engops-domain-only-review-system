@@ -19,6 +19,9 @@ BEHAVIORAL_PROFILES = [
     "crisis_anchor",
     "async_specialist",
     "steady_executor",
+    "technical_specialist",
+    "quiet_contributor",
+    "process_champion",
 ]
 
 
@@ -76,6 +79,9 @@ def _analysis_context(state: dict[str, Any]) -> dict[str, Any]:
         "submission_count": len(state.get("submissions") or []),
         "rules": [
             "Use only evidence from submissions; do not invent facts.",
+            "Every narrative must cite at least one concrete detail from the evidence list (dimension, reviewer pattern, or quoted option text).",
+            "Never use generic filler such as 'meets expectations', 'continues to develop', or 'shows potential' without a specific example.",
+            "Do not penalize low communication scores if technical_judgment and quality are strong — note visibility vs performance gap when applicable.",
             "Do not recommend firing, salary, or PIP outcomes.",
             "Do not quote raw anonymous peer text verbatim.",
             "Score against current role, not a senior bar.",
@@ -100,6 +106,8 @@ Keys:
 - trendRationale (short string)
 - teamContext (how they compare to team/role expectations in prose)
 
+Each narrative must reference specific evidence. If evidence is thin, say what is missing instead of generic praise.
+
 No markdown. No extra keys."""
 
     parsed = _invoke_json(system, _analysis_context(state))
@@ -116,6 +124,8 @@ Keys:
 - placementNotes (when this profile thrives vs struggles on projects)
 - bestForProjects (string array — project types/contexts)
 - workingStyleTraits (string array — observable behaviors)
+
+Prefer technical_specialist or quiet_contributor when technical/quality scores are high but communication is lower — this is a valid style, not a defect.
 
 No markdown. No extra keys."""
 
@@ -137,6 +147,8 @@ Keys:
 - biasWarnings (array of {text, reason, suggestedRewrite})
 - developmentPlan ({focusAreas[], next30Days[], next60Days[], next90Days[], recommendedTraining[], managerSupportNeeded[]})
 - managerTalkingPoints (string array)
+
+Each strength/risk must include evidence[] with at least one non-empty string from submissions. No duplicate boilerplate across employees.
 
 No markdown. No extra keys."""
 

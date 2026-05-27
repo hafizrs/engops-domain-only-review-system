@@ -16,12 +16,43 @@ DIMENSION_LABELS = {
     "ownership_growth": "Ownership, Teamwork & Growth",
 }
 
-# Equal weights for all roles until per-role scaling is configured.
-_EQUAL_WEIGHTS: dict[str, int] = {key: 20 for key in DIMENSION_KEYS}
-
+# Weights sum to 100 per role. IC roles weight technical/quality over visibility (communication).
 ROLE_WEIGHTS: dict[str, dict[str, int]] = {
-    role: dict(_EQUAL_WEIGHTS)
-    for role in ("junior", "mid", "senior", "lead", "manager")
+    "junior": {
+        "technical_judgment": 22,
+        "delivery_execution": 22,
+        "quality": 20,
+        "communication": 8,
+        "ownership_growth": 28,
+    },
+    "mid": {
+        "technical_judgment": 24,
+        "delivery_execution": 22,
+        "quality": 22,
+        "communication": 10,
+        "ownership_growth": 22,
+    },
+    "senior": {
+        "technical_judgment": 26,
+        "delivery_execution": 20,
+        "quality": 22,
+        "communication": 12,
+        "ownership_growth": 20,
+    },
+    "lead": {
+        "technical_judgment": 22,
+        "delivery_execution": 18,
+        "quality": 18,
+        "communication": 18,
+        "ownership_growth": 24,
+    },
+    "manager": {
+        "technical_judgment": 14,
+        "delivery_execution": 18,
+        "quality": 16,
+        "communication": 26,
+        "ownership_growth": 26,
+    },
 }
 
 

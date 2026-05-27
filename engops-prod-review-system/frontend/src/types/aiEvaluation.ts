@@ -12,7 +12,10 @@ export type BehavioralProfile =
   | 'collaborator'
   | 'crisis_anchor'
   | 'async_specialist'
-  | 'steady_executor';
+  | 'steady_executor'
+  | 'technical_specialist'
+  | 'quiet_contributor'
+  | 'process_champion';
 
 export type DimensionKey = PerformanceDimensionKey;
 export type DimensionScores = Record<DimensionKey, number>;
@@ -107,6 +110,29 @@ export const BEHAVIORAL_PROFILES: Record<
     badge: 'br',
     description: 'Reliable on assigned work; may not seek promotion. Valid profile.',
     bestFor: ['Support', 'Maintenance', 'Predictable execution'],
+  },
+  technical_specialist: {
+    label: 'Technical Specialist',
+    emoji: '🔬',
+    badge: 'bp',
+    description:
+      'Deep technical strength; may be quieter in meetings. Judge by code, design docs, and delivery artifacts—not visibility alone.',
+    bestFor: ['Complex modules', 'Architecture depth', 'IC-heavy teams'],
+  },
+  quiet_contributor: {
+    label: 'Quiet Contributor',
+    emoji: '🌿',
+    badge: 'bg',
+    description:
+      'Consistent, high-quality output with limited self-promotion. Low communication scores may reflect style, not disengagement.',
+    bestFor: ['Backend / platform', 'Research spikes', 'Async-first teams'],
+  },
+  process_champion: {
+    label: 'Process Champion',
+    emoji: '⚙️',
+    badge: 'bt',
+    description: 'Improves quality, testing, and team practices. Strong on quality and maintainability dimensions.',
+    bestFor: ['Platform hardening', 'QA enablement', 'Release reliability'],
   },
 };
 

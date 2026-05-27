@@ -1,31 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../api/client';
+import { DashboardPerformanceSummary } from '../components/DashboardPerformanceSummary';
 import { ReviewFormsTable } from '../components/ReviewFormsTable';
+import { useDashboardPerformance } from '../hooks/useDashboardPerformance';
 
 export function AdminDashboard() {
-  const [forms, setForms] = useState<any[]>([]);
+  const perf = useDashboardPerformance();
+  const [linksOpen, setLinksOpen] = useState(true);
 
-  useEffect(() => {
-    api.get('/review-forms').then((r) => setForms(r.data)).catch(() => setForms([]));
-  }, []);
+  const hasPerfData = perf.employees.length > 0;
 
   return (
     <div className="anim">
       <header className="page-header">
         <div>
           <p className="page-eyebrow">Admin dashboard</p>
-          <h1 className="page-title">Review management</h1>
+          <h1 className="page-title">Performance overview</h1>
           <p className="page-desc">
-            Manage review forms, track submissions, and run AI-assisted evaluations from dedicated workflows.
+            Live view of review submissions — employees, role groups, bands, and dimension scores. Use AI evaluation
+            for deeper analysis.
           </p>
         </div>
         <div className="page-actions">
+          <button
+            type="button"
+            className="btn btn-ghost btn-md"
+            onClick={() => perf.reload()}
+            disabled={perf.loading}
+          >
+            {perf.loading ? 'Refreshing…' : 'Refresh'}
+          </button>
           <Link to="/admin/create" className="btn btn-primary btn-md">
             Create review form
           </Link>
           <Link to="/admin/submissions" className="btn btn-outline btn-md">
-            View submissions
+            Submissions
           </Link>
           <Link to="/admin/ai-evaluation" className="btn btn-outline btn-md">
             AI evaluation
@@ -33,33 +42,84 @@ export function AdminDashboard() {
         </div>
       </header>
 
-      <div className="kpi-grid">
-        <div className="kpi-card">
-          <div className="kpi-label">Review forms</div>
-          <div className="kpi-value">{forms.length}</div>
-          <div className="kpi-hint">Total generated review links</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-label">Last created</div>
-          <div className="kpi-value kpi-value-sm">{forms[0]?.title || '—'}</div>
-          <div className="kpi-hint">
-            {forms[0] ? new Date(forms[0].createdAt).toLocaleString() : 'Create your first review link.'}
-          </div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-label">AI evaluation</div>
-          <div className="kpi-value kpi-value-sm">Scope → Generate</div>
-          <div className="kpi-hint">Select forms + date range, then approve manager drafts.</div>
-        </div>
-      </div>
-
-      <ReviewFormsTable
-        forms={forms}
-        panelTitle="Existing review links"
-        primaryActionLabel="Submissions"
-        showCopyLink
-        emptyMessage="No review links yet. Create a form to generate a shareable reviewer link."
+      <DashboardPerformanceSummary
+        employees={perf.employees}
+        roleGroups={perf.roleGroups}
+        bandDistribution={perf.bandDistribution}
+        kpis={perf.kpis}
+        loading={perf.loading}
+        error={perf.error}
+        onRefresh={perf.reload}
       />
+
+      {perf.recentSubmissions.length > 0 && (
+        <section className="data-panel dash-recent-panel">
+          <div className="data-panel-head">
+            <div>
+              <h2 className="data-panel-title">Recent submissions</h2>
+              <p className="data-panel-meta">Latest manager reviews received</p>
+            </div>
+            <Link to="/admin/submissions" className="btn btn-ghost btn-sm">
+              View all
+            </Link>
+          </div>
+          <ul className="dash-recent-list">
+            {perf.recentSubmissions.map((s) => (
+              <li key={s.id} className="dash-recent-item">
+                <div className="dash-recent-main">
+                  <strong>{s.revieweeName}</strong>
+                  <span className="dash-recent-meta">
+                    reviewed by {s.reviewerName} · {s.formTitle || s.formCode}
+                  </span>
+                </div>
+                <div className="dash-recent-right">
+                  <span className="dash-recent-score">{s.totalScore}%</span>
+                  <span className="dash-recent-date">
+                    {new Date(s.submittedAt).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section className="dash-links-section">
+        <button
+          type="button"
+          className="dash-links-toggle"
+          onClick={() => setLinksOpen((o) => !o)}
+          aria-expanded={linksOpen}
+        >
+          <span>Review links</span>
+          <span className="dash-links-count">{perf.forms.length}</span>
+          <span className="dash-links-chevron">{linksOpen ? '▾' : '▸'}</span>
+        </button>
+        {linksOpen && (
+          <ReviewFormsTable
+            forms={perf.forms}
+            panelTitle="All review links"
+            primaryActionLabel="Submissions"
+            showCopyLink
+            emptyMessage="No review links yet. Create a form to generate a shareable reviewer link."
+          />
+        )}
+      </section>
+
+      {!hasPerfData && !perf.loading && (
+        <div className="dash-onboard-banner">
+          <p>
+            <strong>Get started:</strong> create a review form, share the link with managers, then return here to see
+            employee and role-level performance.
+          </p>
+          <Link to="/admin/create" className="btn btn-primary btn-sm">
+            Create your first form
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

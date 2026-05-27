@@ -79,7 +79,18 @@ def analyze_360_feedback(state: dict[str, Any]) -> dict[str, Any]:
 
 def detect_bias_and_language_risk(state: dict[str, Any]) -> dict[str, Any]:
     warnings = []
-    bias_phrases = ["not confident", "personality", "attitude", "culture fit", "young", "old"]
+    bias_phrases = [
+        "not confident",
+        "too quiet",
+        "doesn't speak",
+        "not vocal",
+        "personality",
+        "attitude",
+        "culture fit",
+        "young",
+        "old",
+        "not a team player",
+    ]
     for line in state.get("evidence") or []:
         low = line.lower()
         for phrase in bias_phrases:
@@ -184,11 +195,23 @@ def calibrate_score(state: dict[str, Any]) -> dict[str, Any]:
         band = "needs_focus"
         state.setdefault("score_inconsistencies", []).append("score_evidence_mismatch")
 
+    inconsistencies = list(state.get("score_inconsistencies") or [])
+    tech_avg = (agg.get("technical_judgment", 0) + agg.get("quality", 0)) / 2
+    comm = agg.get("communication", 0)
+    role = (state.get("employee") or {}).get("currentRoleLevel", "mid")
+    if tech_avg >= 4.0 and 0 < comm < 3.2 and role in ("junior", "mid", "senior"):
+        inconsistencies.append(
+            "visibility_gap: strong technical/quality vs lower communication — verify with artifacts; may be introverted working style"
+        )
+        calibrated = round(min(100, calibrated + 2), 1)
+
     return {
         **state,
         "role_based_score": role_score,
         "calibrated_score": calibrated,
         "recommended_band": band,
+        "score_inconsistencies": inconsistencies,
+        "technical_spotlight": tech_avg >= 4.0 and comm < 3.2,
     }
 
 

@@ -1,10 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { getUser, logout } from '../auth/auth';
+import { Link, Navigate } from 'react-router-dom';
 import { BrandLogo } from '../components/BrandLogo';
+import { getUser, logout } from '../auth/auth';
 
 export function Home() {
   const u = getUser();
+
+  if (u?.role === 'admin') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
   return (
     <div className="screen-login">
       <div className="login-ambient" aria-hidden="true" />
@@ -14,32 +19,32 @@ export function Home() {
           <BrandLogo variant="full" tagline="Performance reviews · Selise" />
         </div>
         <div className="login-title">Welcome</div>
-        <div className="login-desc">
-          {u ? (
-            <>
+        {u ? (
+          <>
+            <p className="login-desc login-desc-block">
               Signed in as <strong>{u.name}</strong> ({u.role}).
-              <div style={{ marginTop: 14, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                {u.role === 'admin' ? (
-                  <Link to="/admin/dashboard" className="primary-btn" style={{ textDecoration: 'none' }}>
-                    Go to Dashboard →
-                  </Link>
-                ) : (
-                  <span style={{ color: 'var(--text3)' }}>Open a review link from your admin to complete a review.</span>
-                )}
-                <button type="button" className="secondary-btn" onClick={() => logout()}>
-                  Sign out
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="primary-btn" style={{ textDecoration: 'none' }}>
+            </p>
+            <p className="login-desc login-desc-block" style={{ marginTop: 0 }}>
+              Open a review link from your admin to complete a review.
+            </p>
+            <div className="login-cta">
+              <button type="button" className="secondary-btn" onClick={() => logout()}>
+                Sign out
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="login-desc login-desc-block">
+              Sign in to create review links (admin) or submit reviews (manager).
+            </p>
+            <div className="login-cta">
+              <Link to="/login?next=/admin/dashboard" className="primary-btn login-primary-link">
                 Sign in
-              </Link>{' '}
-              to create links (admin) or submit reviews (manager).
-            </>
-          )}
-        </div>
+              </Link>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

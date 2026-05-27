@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
-import { setSession } from '../auth/auth';
+import { getUser, setSession } from '../auth/auth';
 import { BrandLogo } from '../components/BrandLogo';
 
 export function LoginPage() {
   const [search] = useSearchParams();
-  const next = search.get('next') || '/admin/review-forms';
+  const next = search.get('next') || '/admin/dashboard';
   const [email, setEmail] = useState('admin@selisegroup.com');
   const [name, setName] = useState('Admin');
   const [role, setRole] = useState<'admin' | 'manager'>('admin');
   const [err, setErr] = useState('');
   const nav = useNavigate();
+  const existing = getUser();
+
+  if (existing?.role === 'admin') {
+    return <Navigate to={next} replace />;
+  }
 
   async function submit() {
     setErr('');
@@ -58,7 +63,7 @@ export function LoginPage() {
           </div>
         )}
         <p style={{ marginTop: 20, fontSize: 12, color: 'var(--text3)' }}>
-          After signing in as admin, open <Link to="/admin/review-forms">Review Forms</Link> from the navigation.
+          After signing in as admin, you will land on the <Link to="/admin/dashboard">Dashboard</Link>.
         </p>
       </div>
     </div>
