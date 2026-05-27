@@ -17,13 +17,14 @@ DIMENSION_LABELS = {
 }
 
 # Weights sum to 100 per role. IC roles weight technical/quality over visibility (communication).
+# Juniors: fundamentals (technical, delivery, quality) over ownership — growth is tracked, not the primary bar.
 ROLE_WEIGHTS: dict[str, dict[str, int]] = {
     "junior": {
-        "technical_judgment": 22,
-        "delivery_execution": 22,
-        "quality": 20,
+        "technical_judgment": 28,
+        "delivery_execution": 24,
+        "quality": 24,
         "communication": 8,
-        "ownership_growth": 28,
+        "ownership_growth": 16,
     },
     "mid": {
         "technical_judgment": 24,
