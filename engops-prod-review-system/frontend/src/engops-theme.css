@@ -2648,19 +2648,15 @@ a:focus:not(:focus-visible) {
   color: var(--text);
 }
 
-.dash-row-spotlight {
-  background: rgba(37, 99, 235, 0.04);
-}
-
-.dash-spotlight-tag {
+.dash-behavior-tag {
   display: inline-block;
   margin-top: 6px;
   font-size: 10px;
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #dbeafe;
-  color: #1e40af;
+  background: #ede9fe;
+  color: #5b21b6;
 }
 
 .dash-dim-bars {

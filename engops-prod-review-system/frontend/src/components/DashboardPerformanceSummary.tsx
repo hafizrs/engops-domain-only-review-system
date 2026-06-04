@@ -1,12 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PERFORMANCE_DIMENSION_KEYS, PERFORMANCE_DIMENSION_LABELS } from '../dims';
-import {
-  isTechnicalSpotlight,
-  type BandKey,
-  type RoleGroupSummary,
-  type ScopedEmployee,
-} from '../hooks/useDashboardPerformance';
+import { isEvaluatedStatus } from '../data/evaluationData';
+import type { BandKey, RoleGroupSummary, ScopedEmployee } from '../hooks/useDashboardPerformance';
 import { ROLE_LABELS } from '../questionBank';
 import type { EmployeeRole } from '../types/aiEvaluation';
 
@@ -51,7 +47,6 @@ type Props = {
     avg: number | null;
     rolesCovered: number;
     formCount: number;
-    technicalSpotlight: number;
     needsAttention: number;
     formsWithoutSubs: number;
     lastSubmissionAt: number | null;
@@ -168,11 +163,6 @@ export function DashboardPerformanceSummary({
           <div className="kpi-label">Needs attention</div>
           <div className="kpi-value kpi-value-warn">{kpis.needsAttention}</div>
           <div className="kpi-hint">At risk or needs focus</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-label">Technical spotlight</div>
-          <div className="kpi-value kpi-value-info">{kpis.technicalSpotlight}</div>
-          <div className="kpi-hint">Strong tech/quality, lower visibility</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Empty forms</div>
@@ -330,17 +320,21 @@ export function DashboardPerformanceSummary({
               </thead>
               <tbody>
                 {filtered.map((e) => {
-                  const spotlight = isTechnicalSpotlight(e);
+                  const aiEvaluated = isEvaluatedStatus(e.storedEval?.status);
+                  const behaviorLabel = aiEvaluated ? e.behavioralLabel?.trim() : '';
                   return (
-                    <tr key={e.employeeKey} className={spotlight ? 'dash-row-spotlight' : undefined}>
+                    <tr key={e.employeeKey}>
                       <td>
                         <div className="cell-title">{e.employeeName}</div>
                         {e.email && !e.email.includes('@unknown') && (
                           <div className="cell-sub">{e.email}</div>
                         )}
-                        {spotlight && (
-                          <span className="dash-spotlight-tag" title="Strong technical/quality; lower communication — verify via artifacts">
-                            Technical spotlight
+                        {behaviorLabel && (
+                          <span
+                            className="dash-behavior-tag"
+                            title={e.behavioralSummary || `AI behavioral profile: ${behaviorLabel}`}
+                          >
+                            {behaviorLabel}
                           </span>
                         )}
                       </td>

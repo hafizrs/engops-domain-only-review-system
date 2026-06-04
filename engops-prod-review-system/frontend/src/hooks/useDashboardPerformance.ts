@@ -2,9 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '../api/client';
 import {
   buildScopedEmployees,
+  employeeKey,
+  isEvaluatedStatus,
+  mapApiEvaluationToStored,
+  reconcileStoredKeys,
   sortReviewFormsByCreatedDesc,
   type ReviewFormRef,
   type ScopedEmployee,
+  type StoredAiEvaluation,
   type SubmissionRef,
 } from '../data/evaluationData';
 import { ROLE_LABELS } from '../questionBank';
@@ -43,13 +48,6 @@ function mapApiSubmission(s: Record<string, unknown>, form?: ReviewFormRef): Sub
   };
 }
 
-export function isTechnicalSpotlight(e: ScopedEmployee): boolean {
-  const t = e.managerScores.technical_judgment ?? 0;
-  const q = e.managerScores.quality ?? 0;
-  const c = e.managerScores.communication ?? 0;
-  return (t + q) / 2 >= 3.8 && c > 0 && c < 3.2;
-}
-
 export type RoleGroupSummary = {
   role: EmployeeRole;
   label: string;
@@ -66,6 +64,7 @@ export type FormWithCount = ReviewFormRef & { submissionCount: number };
 export function useDashboardPerformance() {
   const [forms, setForms] = useState<ReviewFormRef[]>([]);
   const [submissions, setSubmissions] = useState<SubmissionRef[]>([]);
+  const [storedEvals, setStoredEvals] = useState<Record<string, StoredAiEvaluation>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -91,18 +90,33 @@ export function useDashboardPerformance() {
           return;
         }
 
-        const batches = await Promise.all(
-          mapped.map(async (f) => {
-            try {
-              const res = await api.get(`/submissions/form/${f.code}`);
-              return (res.data as Record<string, unknown>[]).map((s) => mapApiSubmission(s, f));
-            } catch {
-              return [] as SubmissionRef[];
-            }
-          })
-        );
+        const [batches, aiRes] = await Promise.all([
+          Promise.all(
+            mapped.map(async (f) => {
+              try {
+                const res = await api.get(`/submissions/form/${f.code}`);
+                return (res.data as Record<string, unknown>[]).map((s) => mapApiSubmission(s, f));
+              } catch {
+                return [] as SubmissionRef[];
+              }
+            })
+          ),
+          api.get('/ai-evaluations').catch(() => ({ data: [] as Record<string, unknown>[] })),
+        ]);
         if (cancelled) return;
         setSubmissions(batches.flat());
+
+        const stored: Record<string, StoredAiEvaluation> = {};
+        for (const doc of (aiRes.data as Record<string, unknown>[]) ?? []) {
+          const email = String(doc.revieweeEmail ?? '').trim().toLowerCase();
+          const name = String(doc.revieweeName ?? '').trim();
+          const key = employeeKey(name, email);
+          const mapped = mapApiEvaluationToStored(doc, key);
+          if (isEvaluatedStatus(mapped.status)) {
+            stored[key] = mapped;
+          }
+        }
+        setStoredEvals(stored);
       } catch (err: unknown) {
         if (!cancelled) {
           setForms([]);
@@ -123,10 +137,11 @@ export function useDashboardPerformance() {
     };
   }, [refreshKey]);
 
-  const employees = useMemo(
-    () => buildScopedEmployees(submissions, {}, forms),
-    [submissions, forms]
-  );
+  const employees = useMemo(() => {
+    const scopeOnly = buildScopedEmployees(submissions, {}, forms);
+    const normalized = reconcileStoredKeys(storedEvals, scopeOnly);
+    return buildScopedEmployees(submissions, normalized, forms);
+  }, [submissions, storedEvals, forms]);
 
   const formsWithCounts = useMemo((): FormWithCount[] => {
     return forms.map((f) => ({
@@ -177,7 +192,6 @@ export function useDashboardPerformance() {
         ? Math.round(employees.reduce((a, e) => a + e.avgSubmissionScore, 0) / employees.length)
         : null;
     const rolesCovered = new Set(employees.map((e) => e.role)).size;
-    const technicalSpotlight = employees.filter(isTechnicalSpotlight).length;
     const needsAttention = employees.filter(
       (e) => e.performanceBand === 'At Risk' || e.performanceBand === 'Needs Focus'
     ).length;
@@ -196,7 +210,6 @@ export function useDashboardPerformance() {
       avg,
       rolesCovered,
       formCount: forms.length,
-      technicalSpotlight,
       needsAttention,
       formsWithoutSubs,
       lastSubmissionAt,
