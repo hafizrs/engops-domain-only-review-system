@@ -22,6 +22,7 @@ export function AdminReviewForms() {
   const [createdUrl, setCreatedUrl] = useState('');
   const [createdCode, setCreatedCode] = useState('');
   const [copyFlash, setCopyFlash] = useState('');
+  const [activeDimKey, setActiveDimKey] = useState(DIMS[0].key);
 
   useEffect(() => {
     loadForms();
@@ -147,9 +148,39 @@ export function AdminReviewForms() {
         )}
       </section>
 
-      <section className="create-page-section" aria-label="Question selection">
+      <section className="create-page-section create-questions-section" aria-label="Question selection">
+        <nav className="create-dim-nav" aria-label="Performance dimensions">
+          {DIMS.map((d, i) => {
+            const count = sel[d.key].size;
+            const done = count === 5;
+            const isActive = d.key === activeDimKey;
+            return (
+              <button
+                key={d.key}
+                type="button"
+                className={
+                  'create-dim-nav-btn' +
+                  (isActive ? ' is-active' : '') +
+                  (done ? ' is-done' : '')
+                }
+                aria-current={isActive ? 'step' : undefined}
+                onClick={() => setActiveDimKey(d.key)}
+              >
+                <span className="create-dim-nav-idx">{i + 1}</span>
+                <span className="create-dim-nav-label">{d.label}</span>
+                <span className={'create-dim-nav-count' + (done ? ' done' : '')}>{count}/5</span>
+              </button>
+            );
+          })}
+        </nav>
         {DIMS.map((d) => (
-          <DimPanel key={d.key} dim={d} active sel={sel[d.key]} onToggle={toggleQ} />
+          <DimPanel
+            key={d.key}
+            dim={d}
+            active={d.key === activeDimKey}
+            sel={sel[d.key]}
+            onToggle={toggleQ}
+          />
         ))}
       </section>
 
