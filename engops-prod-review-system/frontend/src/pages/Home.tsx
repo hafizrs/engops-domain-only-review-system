@@ -16,7 +16,7 @@ export function Home() {
       <div className="login-mesh" aria-hidden="true" />
       <div className="login-card anim" style={{ maxWidth: 440 }}>
         <div className="login-logo">
-          <BrandLogo variant="full" tagline="Performance reviews · Selise" />
+          <BrandLogo variant="full" tagline="Reviews · AI evaluation · calibration" />
         </div>
         <div className="login-title">Welcome</div>
         {u ? (

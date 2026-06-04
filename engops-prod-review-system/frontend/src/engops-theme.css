@@ -303,6 +303,9 @@ body {
 
 .admin-sidebar .brand-name {
   color: #f1f5f9;
+  font-size: 13px;
+  line-height: 1.25;
+  white-space: normal;
 }
 
 .admin-sidebar .brand-tagline {

@@ -32,13 +32,13 @@ export function BrandLogo({ variant = 'full', tagline }: Props) {
 
   const line =
     tagline ??
-    (variant === 'compact' ? 'Selise · Engineering Operations' : 'Selise · Performance reviews');
+    (variant === 'compact' ? 'Engineering Operations' : 'Reviews · AI evaluation · calibration');
 
   return (
     <div className={`brand-lockup brand-lockup--${variant}`}>
       <BrandMark size={variant === 'compact' ? 'md' : 'md'} />
       <div className="brand-copy">
-        <span className="brand-name">EngOps Eval</span>
+        <span className="brand-name">Selise Performance Hub</span>
         <span className="brand-tagline">{line}</span>
       </div>
     </div>

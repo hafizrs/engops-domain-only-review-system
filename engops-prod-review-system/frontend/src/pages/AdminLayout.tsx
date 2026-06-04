@@ -79,7 +79,7 @@ export function AdminLayout() {
         <aside className="admin-sidebar" aria-label="Admin navigation">
           <div className="admin-sidebar-brand">
             <div className="admin-sidebar-brand-row">
-              <BrandLogo variant="compact" tagline="Selise · Engineering Operations" />
+              <BrandLogo variant="compact" tagline="Engineering Operations" />
             </div>
           </div>
 
