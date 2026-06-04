@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { SubmissionResponses } from '../components/SubmissionResponses';
 
 export function AdminSubmissionDetail() {
   const { code, submissionId } = useParams();
-  const navigate = useNavigate();
   const [form, setForm] = useState<any>(null);
   const [subs, setSubs] = useState<any[]>([]);
   const [loadErr, setLoadErr] = useState('');
@@ -51,19 +50,6 @@ export function AdminSubmissionDetail() {
           <div style={{ marginTop: 8, color: 'var(--text3)' }}>
             Review link code <span style={{ fontFamily: 'DM Mono', color: 'var(--text2)' }}>{code}</span>
           </div>
-        </div>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Link to="/admin/submissions" className="secondary-btn" style={{ textDecoration: 'none' }}>
-            Back to submissions
-          </Link>
-          <button
-            type="button"
-            className="secondary-btn"
-            onClick={() => navigate('/admin/create')}
-            style={{ textDecoration: 'none' }}
-          >
-            Create review form
-          </button>
         </div>
       </div>
 

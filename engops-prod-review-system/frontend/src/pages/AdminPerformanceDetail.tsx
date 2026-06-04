@@ -61,18 +61,6 @@ export function AdminPerformanceDetail() {
         </p>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-        <Link to={`/admin/employees/${emp.id}`} className="secondary-btn" style={{ textDecoration: 'none', fontSize: 12 }}>
-          Employee profile
-        </Link>
-        <Link to="/admin/ai-evaluation" className="primary-btn" style={{ textDecoration: 'none', fontSize: 12 }}>
-          Open AI evaluation (submission scope)
-        </Link>
-        <button type="button" className="secondary-btn" style={{ fontSize: 12 }} onClick={() => alert('Run AI — Phase 2 backend')}>
-          Run AI analysis
-        </button>
-      </div>
-
       <div className="perf-detail-tabs">
         {TABS.map((t) => (
           <button key={t.id} type="button" className={`perf-detail-tab ${tab === t.id ? 'active' : ''}`} onClick={() => setTab(t.id)}>
@@ -118,9 +106,6 @@ export function AdminPerformanceDetail() {
               pending
             </li>
           </ul>
-          <Link to="/admin/submissions" className="secondary-btn" style={{ marginTop: 12, textDecoration: 'none', fontSize: 12 }}>
-            View form submissions
-          </Link>
         </Card>
       )}
 

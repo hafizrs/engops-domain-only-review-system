@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { DashboardPerformanceSummary } from '../components/DashboardPerformanceSummary';
 import { ReviewFormsTable } from '../components/ReviewFormsTable';
 import { useDashboardPerformance } from '../hooks/useDashboardPerformance';
@@ -17,28 +16,8 @@ export function AdminDashboard() {
           <p className="page-eyebrow">Admin dashboard</p>
           <h1 className="page-title">Performance overview</h1>
           <p className="page-desc">
-            Live view of review submissions — employees, role groups, bands, and dimension scores. Use AI evaluation
-            for deeper analysis.
+            Live view of review submissions — employees, role groups, bands, and dimension scores.
           </p>
-        </div>
-        <div className="page-actions">
-          <button
-            type="button"
-            className="btn btn-ghost btn-md"
-            onClick={() => perf.reload()}
-            disabled={perf.loading}
-          >
-            {perf.loading ? 'Refreshing…' : 'Refresh'}
-          </button>
-          <Link to="/admin/create" className="btn btn-primary btn-md">
-            Create review form
-          </Link>
-          <Link to="/admin/submissions" className="btn btn-outline btn-md">
-            Submissions
-          </Link>
-          <Link to="/admin/ai-evaluation" className="btn btn-outline btn-md">
-            AI evaluation
-          </Link>
         </div>
       </header>
 
@@ -59,9 +38,6 @@ export function AdminDashboard() {
               <h2 className="data-panel-title">Recent submissions</h2>
               <p className="data-panel-meta">Latest manager reviews received</p>
             </div>
-            <Link to="/admin/submissions" className="btn btn-ghost btn-sm">
-              View all
-            </Link>
           </div>
           <ul className="dash-recent-list">
             {perf.recentSubmissions.map((s) => (
@@ -112,12 +88,9 @@ export function AdminDashboard() {
       {!hasPerfData && !perf.loading && (
         <div className="dash-onboard-banner">
           <p>
-            <strong>Get started:</strong> create a review form, share the link with managers, then return here to see
-            employee and role-level performance.
+            <strong>Get started:</strong> create a review form from the sidebar, share the link with managers, then
+            return here to see employee and role-level performance.
           </p>
-          <Link to="/admin/create" className="btn btn-primary btn-sm">
-            Create your first form
-          </Link>
         </div>
       )}
     </div>

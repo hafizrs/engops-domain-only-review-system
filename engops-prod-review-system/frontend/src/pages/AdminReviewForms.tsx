@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { ReviewFormsTable } from '../components/ReviewFormsTable';
 import { DIMS, type DimensionDef } from '../questionBank';
@@ -101,14 +100,6 @@ export function AdminReviewForms() {
             Select 5 questions per dimension, generate a link, then share it with managers. Published links appear in
             the table below.
           </p>
-        </div>
-        <div className="page-actions">
-          <Link to="/admin/submissions" className="btn btn-outline btn-md">
-            Submissions
-          </Link>
-          <Link to="/admin/dashboard" className="btn btn-outline btn-md">
-            Dashboard
-          </Link>
         </div>
       </header>
 

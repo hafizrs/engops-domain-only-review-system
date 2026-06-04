@@ -126,17 +126,13 @@ export function AdminEmployeeProfile() {
 
       {tab === 'reviews' && (
         <div className="perf-card">
-          <Link to="/admin/submissions" className="secondary-btn" style={{ textDecoration: 'none' }}>
-            View linked submissions
-          </Link>
+          <p style={{ fontSize: 13, color: 'var(--text3)' }}>Linked submissions are available under Submissions in the sidebar.</p>
         </div>
       )}
 
       {tab === 'allocation' && (
         <div className="perf-card">
-          <Link to="/admin/resource-allocation" className="secondary-btn" style={{ textDecoration: 'none' }}>
-            Resource allocation requests
-          </Link>
+          <p style={{ fontSize: 13, color: 'var(--text3)' }}>Resource allocation is available under AI evaluation in the sidebar.</p>
         </div>
       )}
     </div>

@@ -278,9 +278,6 @@ export function DashboardPerformanceSummary({
               {bandFilter !== 'all' ? ` · ${bandFilter}` : ''}
             </p>
           </div>
-          <Link to="/admin/ai-evaluation" className="btn btn-primary btn-sm">
-            Open AI evaluation
-          </Link>
         </div>
 
         <div className="dash-table-toolbar">
@@ -303,12 +300,7 @@ export function DashboardPerformanceSummary({
         {filtered.length === 0 ? (
           <div className="dash-perf-empty">
             {employees.length === 0 ? (
-              <>
-                <p>No review submissions yet.</p>
-                <Link to="/admin/create" className="btn btn-primary btn-md" style={{ marginTop: 12 }}>
-                  Create review form
-                </Link>
-              </>
+              <p>No review submissions yet. Create a review form from the sidebar to get started.</p>
             ) : (
               <p>No employees match your filters. Try clearing search or filters.</p>
             )}
