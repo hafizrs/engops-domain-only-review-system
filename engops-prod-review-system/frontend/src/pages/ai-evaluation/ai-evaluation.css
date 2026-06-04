@@ -89,7 +89,7 @@
   margin: 0;
   color: var(--text2);
   font-size: 13px;
-  max-width: 720px;
+  max-width: none;
   line-height: 1.6;
 }
 

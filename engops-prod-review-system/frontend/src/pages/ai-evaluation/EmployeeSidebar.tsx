@@ -7,7 +7,7 @@ type Props = {
   onTogglePool: (key: string) => void;
   onSelectAllPool: () => void;
   onClearPool: () => void;
-  listMode: 'view' | 'pool';
+  listMode: 'view' | 'pool' | 'evaluated';
   emptyMessage?: string;
 };
 
@@ -25,9 +25,15 @@ export function EmployeeSidebar({
   return (
     <aside className="ai-eval-sidebar">
       <div className="ai-eval-sidebar-head">
-        <h2>{listMode === 'pool' ? 'Allocation pool' : 'Reviewees in scope'}</h2>
+        <h2>
+          {listMode === 'pool' ? 'Allocation pool' : listMode === 'evaluated' ? 'Saved evaluations' : 'Reviewees in scope'}
+        </h2>
         <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
-          {listMode === 'pool' ? `${poolKeys.size} selected for fit check` : `${employees.length} from submissions`}
+          {listMode === 'pool'
+            ? `${poolKeys.size} selected for fit check`
+            : listMode === 'evaluated'
+              ? `${employees.length} completed`
+              : `${employees.length} from submissions`}
         </div>
         {listMode === 'pool' && employees.length > 0 && (
           <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
@@ -48,7 +54,6 @@ export function EmployeeSidebar({
         employees.map((e) => {
           const inPool = poolKeys.has(e.employeeKey);
           const active = selectedKey === e.employeeKey;
-          const st = e.storedEval?.status;
           return (
             <div key={e.employeeKey} className={`ai-eval-emp-row ${active ? 'active' : ''}`}>
               {listMode === 'pool' && (
@@ -62,8 +67,18 @@ export function EmployeeSidebar({
               <button type="button" className="ai-eval-emp-btn-inner" onClick={() => onSelect(e.employeeKey)}>
                 <div className="ai-eval-emp-name">{e.employeeName}</div>
                 <div className="ai-eval-emp-meta">
-                  {e.submissionCount} sub(s) · avg {e.avgSubmissionScore}
-                  {st && st !== 'not_generated' ? ` · ${st}` : ''}
+                  {listMode === 'evaluated' ? (
+                    <>
+                      Score {e.calibratedScore}% · {e.performanceBand}
+                      {e.storedEval?.generatedAt
+                        ? ` · ${new Date(e.storedEval.generatedAt).toLocaleDateString()}`
+                        : ''}
+                    </>
+                  ) : (
+                    <>
+                      {e.submissionCount} sub(s) · avg {e.avgSubmissionScore}
+                    </>
+                  )}
                 </div>
               </button>
             </div>

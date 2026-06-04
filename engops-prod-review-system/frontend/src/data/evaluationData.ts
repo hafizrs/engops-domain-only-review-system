@@ -48,6 +48,8 @@ export type AiEvalStatus = 'not_generated' | 'generated' | 'approved' | 'overrid
 export type StoredAiEvaluation = {
   evaluationId: string;
   employeeKey: string;
+  revieweeName?: string;
+  revieweeEmail?: string;
   status: AiEvalStatus;
   generatedAt?: string;
   approvedAt?: string;
@@ -269,6 +271,8 @@ export function mapApiEvaluationToStored(doc: Record<string, unknown>, employeeK
   return {
     evaluationId: String(doc._id ?? doc.id ?? ''),
     employeeKey,
+    revieweeName: String(doc.revieweeName ?? ''),
+    revieweeEmail: String(doc.revieweeEmail ?? ''),
     status,
     generatedAt: String(doc.updatedAt ?? doc.createdAt ?? new Date().toISOString()),
     approvedAt: doc.approvedAt ? String(doc.approvedAt) : undefined,
@@ -357,6 +361,132 @@ export function applyStoredEval(employee: AiEvaluationRecord, stored?: StoredAiE
       sentiment: peer.sentiment ?? employee.peerPatterns.sentiment,
     },
   };
+}
+
+export function isEvaluatedStatus(status?: AiEvalStatus | string) {
+  return status === 'generated' || status === 'approved' || status === 'override';
+}
+
+/** Reviewees that have a saved AI evaluation (not tied to current submission scope). */
+export function buildEvaluatedEmployees(stored: Record<string, StoredAiEvaluation>): ScopedEmployee[] {
+  const byEmail = new Map<string, ScopedEmployee>();
+
+  for (const [key, evalDoc] of Object.entries(stored)) {
+    if (!isEvaluatedStatus(evalDoc.status)) continue;
+
+    const dedupeKey = evalDoc.revieweeEmail?.trim().toLowerCase() || key;
+    const existing = byEmail.get(dedupeKey);
+    const incoming = employeeFromStoredEvaluation(key, evalDoc);
+
+    if (!existing) {
+      byEmail.set(dedupeKey, incoming);
+      continue;
+    }
+
+    const existingAt = existing.storedEval?.generatedAt ?? '';
+    const incomingAt = evalDoc.generatedAt ?? '';
+    if (incomingAt >= existingAt) {
+      byEmail.set(dedupeKey, incoming);
+    }
+  }
+
+  return [...byEmail.values()].sort((a, b) => a.employeeName.localeCompare(b.employeeName));
+}
+
+export function employeeFromStoredEvaluation(key: string, stored: StoredAiEvaluation): ScopedEmployee {
+  const score = Math.round(stored.calibratedScore ?? 0);
+  const bandLabel = stored.recommendedBand && RECOMMENDED_BAND_LABELS[stored.recommendedBand];
+  const band: AiEvaluationRecord['performanceBand'] =
+    bandLabel === 'Excellent' || bandLabel === 'Good' || bandLabel === 'Needs Focus' || bandLabel === 'At Risk'
+      ? bandLabel
+      : scoreToBand(score);
+  const name = stored.revieweeName?.trim() || key;
+  const email = stored.revieweeEmail?.trim() || `${key}@unknown.local`;
+  const base: AiEvaluationRecord = {
+    employeeId: key,
+    employeeName: name,
+    email,
+    title: 'Engineer',
+    department: 'Engineering',
+    tenure: '—',
+    techStack: [],
+    role: 'mid',
+    reviewPeriod: 'Saved evaluation',
+    behavioralProfile: 'collaborator',
+    behavioralLabel: 'Collaborator',
+    behavioralSummary: '',
+    aboveRoleSignal: 'none',
+    managerScores: {} as DimensionScores,
+    rawScore: score,
+    calibratedScore: score,
+    performanceBand: band,
+    teamAverage: score,
+    roleAverage: score,
+    trend: 'stable',
+    aiSummary: '',
+    aiStrengths: [],
+    aiRisks: [],
+    aiBiasFlags: [],
+    aiDevelopmentPlan: [],
+    aiTalkingPoints: [],
+    employeeFacingSummary: '',
+    peerPatterns: { positive: [], negative: [], sentiment: 'neutral' },
+    achievements: [],
+    blockers: [],
+    aboveRoleSignals: [],
+    evidenceStrength: 'medium',
+    allocationFitScore: score,
+    recommendedProjectTypes: [],
+  };
+
+  return {
+    ...applyStoredEval(base, stored),
+    employeeKey: key,
+    employeeId: key,
+    submissionIds: stored.includedSubmissionIds,
+    submissionCount: stored.includedSubmissionIds.length,
+    avgSubmissionScore: score,
+    formsInvolved: stored.sourceFormCodes,
+    storedEval: stored,
+  };
+}
+
+/** Merge stored evaluations that use a different key (e.g. email) onto scope reviewee keys. */
+export function reconcileStoredKeys(
+  stored: Record<string, StoredAiEvaluation>,
+  scopeEmployees: Pick<ScopedEmployee, 'employeeKey' | 'employeeName' | 'email'>[]
+): Record<string, StoredAiEvaluation> {
+  let changed = false;
+  const next = { ...stored };
+
+  for (const emp of scopeEmployees) {
+    for (const [key, evalDoc] of Object.entries(stored)) {
+      if (key === emp.employeeKey) continue;
+
+      const emailMatch =
+        !!evalDoc.revieweeEmail &&
+        !!emp.email &&
+        evalDoc.revieweeEmail.toLowerCase() === emp.email.toLowerCase();
+      const nameMatch =
+        !!evalDoc.revieweeName &&
+        evalDoc.revieweeName.trim().toLowerCase() === emp.employeeName.trim().toLowerCase();
+
+      if (!emailMatch && !nameMatch) continue;
+
+      const existing = next[emp.employeeKey];
+      const useIncoming =
+        !existing?.generatedAt ||
+        !!(evalDoc.generatedAt && evalDoc.generatedAt >= (existing.generatedAt ?? ''));
+
+      if (useIncoming) {
+        next[emp.employeeKey] = { ...evalDoc, employeeKey: emp.employeeKey };
+      }
+      delete next[key];
+      changed = true;
+    }
+  }
+
+  return changed ? next : stored;
 }
 
 export function buildScopedEmployees(

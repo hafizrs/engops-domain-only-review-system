@@ -38,7 +38,7 @@ export function BrandLogo({ variant = 'full', tagline }: Props) {
     <div className={`brand-lockup brand-lockup--${variant}`}>
       <BrandMark size={variant === 'compact' ? 'md' : 'md'} />
       <div className="brand-copy">
-        <span className="brand-name">Review</span>
+        <span className="brand-name">EngOps Eval</span>
         <span className="brand-tagline">{line}</span>
       </div>
     </div>

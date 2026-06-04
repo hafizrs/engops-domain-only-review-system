@@ -48,6 +48,9 @@ export class AiEvaluation {
   @Prop() approvedAt?: Date;
   @Prop() managerEditedSummary?: string;
   @Prop({ type: Types.ObjectId, ref: 'User' }) approvedBy?: Types.ObjectId;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const AiEvaluationSchema = SchemaFactory.createForClass(AiEvaluation);

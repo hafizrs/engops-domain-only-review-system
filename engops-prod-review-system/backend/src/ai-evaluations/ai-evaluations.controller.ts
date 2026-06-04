@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Roles } from '../common/roles.decorator';
@@ -43,6 +43,17 @@ export class AiEvaluationsController {
       res.write(`data: ${JSON.stringify({ event: 'error', message: err?.message ?? 'Stream failed' })}\n\n`);
       res.end();
     }
+  }
+
+  @Get()
+  list(@Query('formCodes') formCodes?: string) {
+    const codes = formCodes
+      ? formCodes
+          .split(',')
+          .map((c) => c.trim())
+          .filter(Boolean)
+      : undefined;
+    return this.service.listCompleted({ formCodes: codes });
   }
 
   @Get(':id')

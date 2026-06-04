@@ -199,6 +199,30 @@ export class AiEvaluationsService {
     }
   }
 
+  async listCompleted(options?: { formCodes?: string[]; limit?: number }) {
+    const filter: Record<string, unknown> = { status: 'completed' };
+    if (options?.formCodes?.length) {
+      filter.sourceFormCodes = { $in: options.formCodes };
+    }
+
+    const docs = await this.aiModel
+      .find(filter)
+      .sort({ updatedAt: -1 })
+      .limit(options?.limit ?? 300)
+      .lean();
+
+    const latestByEmail = new Map<string, (typeof docs)[number]>();
+    for (const doc of docs) {
+      const email = String(doc.revieweeEmail ?? '').trim().toLowerCase();
+      if (!email || latestByEmail.has(email)) continue;
+      latestByEmail.set(email, doc);
+    }
+
+    return Array.from(latestByEmail.values()).sort((a, b) =>
+      String(b.updatedAt ?? b.createdAt ?? '').localeCompare(String(a.updatedAt ?? a.createdAt ?? '')),
+    );
+  }
+
   async findById(id: string) {
     const doc = await this.aiModel.findById(id).lean();
     if (!doc) throw new NotFoundException('AI evaluation not found');

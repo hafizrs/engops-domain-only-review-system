@@ -9,9 +9,12 @@ import {
   type StoredAiEvaluation,
   type StreamProgressItem,
   type SubmissionRef,
+  buildEvaluatedEmployees,
   buildScopedEmployees,
+  employeeKey,
   filterSubmissionsByConfig,
   mapApiEvaluationToStored,
+  reconcileStoredKeys,
   sortReviewFormsByCreatedDesc,
 } from '../../data/evaluationData';
 
@@ -91,6 +94,7 @@ export function useEvaluationData() {
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [streamProgress, setStreamProgress] = useState<StreamProgressItem[]>([]);
   const [streamMessage, setStreamMessage] = useState<string | null>(null);
+  const [loadingStored, setLoadingStored] = useState(false);
 
   useEffect(() => {
     setLoadingForms(true);
@@ -143,15 +147,65 @@ export function useEvaluationData() {
     }
   }, [config.selectedFormIds, loadSubmissionsForForms, loadingForms]);
 
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingStored(true);
+
+    api
+      .get('/ai-evaluations')
+      .then((res) => {
+        if (cancelled) return;
+        const docs = (res.data as Record<string, unknown>[]) ?? [];
+        setStored((prev) => {
+          const next = { ...prev };
+          for (const doc of docs) {
+            const email = String(doc.revieweeEmail ?? '').trim().toLowerCase();
+            const name = String(doc.revieweeName ?? '').trim();
+            const key = employeeKey(name, email);
+            const mapped = mapApiEvaluationToStored(doc, key);
+            const existing = next[key];
+            if (!existing?.generatedAt) {
+              next[key] = mapped;
+              continue;
+            }
+            if (mapped.generatedAt && mapped.generatedAt >= existing.generatedAt) {
+              next[key] = mapped;
+            }
+          }
+          return next;
+        });
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoadingStored(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const scopedSubmissions = useMemo(
     () => filterSubmissionsByConfig(allSubmissions, config, forms),
     [allSubmissions, config, forms]
   );
 
-  const scopedEmployees = useMemo(
-    () => buildScopedEmployees(scopedSubmissions, stored, forms),
-    [scopedSubmissions, stored, forms]
+  const scopeOnlyEmployees = useMemo(
+    () => buildScopedEmployees(scopedSubmissions, {}, forms),
+    [scopedSubmissions, forms]
   );
+
+  const normalizedStored = useMemo(
+    () => reconcileStoredKeys(stored, scopeOnlyEmployees),
+    [stored, scopeOnlyEmployees]
+  );
+
+  const scopedEmployees = useMemo(
+    () => buildScopedEmployees(scopedSubmissions, normalizedStored, forms),
+    [scopedSubmissions, normalizedStored, forms]
+  );
+
+  const evaluatedEmployees = useMemo(() => buildEvaluatedEmployees(stored), [stored]);
 
   const configReady = config.selectedFormIds.length > 0;
 
@@ -269,6 +323,7 @@ export function useEvaluationData() {
     setConfig,
     scopedSubmissions,
     scopedEmployees,
+    evaluatedEmployees,
     configReady,
     loadingForms,
     loadingSubs,
@@ -278,6 +333,7 @@ export function useEvaluationData() {
     streamProgress,
     streamMessage,
     stored,
+    loadingStored,
     generateForEmployees,
     updateStoredStatus,
   };

@@ -6,22 +6,21 @@ import { BehavioralPanel } from './ai-evaluation/BehavioralPanel';
 import { EmployeeSidebar } from './ai-evaluation/EmployeeSidebar';
 import { GeneratePanel, type GenerateScope } from './ai-evaluation/GeneratePanel';
 import { PerformancePanel } from './ai-evaluation/PerformancePanel';
+import { EvaluatedEmployeesPanel } from './ai-evaluation/EvaluatedEmployeesPanel';
 import { SetupPanel } from './ai-evaluation/SetupPanel';
-import { SubmissionEvidencePanel } from './ai-evaluation/SubmissionEvidencePanel';
 import { useEvaluationData } from './ai-evaluation/useEvaluationData';
 import './ai-evaluation/ai-evaluation.css';
 
 type Workflow = 'setup' | 'generate' | 'review';
-type ReviewTab = 'evidence' | 'performance' | 'behavioral' | 'ai-insights';
+type ReviewTab = 'performance' | 'behavioral' | 'ai-insights';
 
 const WORKFLOWS: { id: Workflow; label: string }[] = [
   { id: 'setup', label: '1 · Scope' },
   { id: 'generate', label: '2 · Generate' },
-  { id: 'review', label: '3 · Review' },
+  { id: 'review', label: '3 · Results' },
 ];
 
-const REVIEW_TABS: { id: ReviewTab; label: string }[] = [
-  { id: 'evidence', label: 'Submissions' },
+const RESULTS_TABS: { id: ReviewTab; label: string }[] = [
   { id: 'performance', label: 'Performance' },
   { id: 'behavioral', label: 'Behavioral' },
   { id: 'ai-insights', label: 'AI insights' },
@@ -34,6 +33,7 @@ export function AdminAiEvaluation() {
     setConfig,
     scopedSubmissions,
     scopedEmployees,
+    evaluatedEmployees,
     configReady,
     loadingForms,
     loadingSubs,
@@ -42,31 +42,33 @@ export function AdminAiEvaluation() {
     generateError,
     streamProgress,
     streamMessage,
-    stored,
+    loadingStored,
     generateForEmployees,
   } = useEvaluationData();
 
   const [workflow, setWorkflow] = useState<Workflow>('setup');
-  const [reviewTab, setReviewTab] = useState<ReviewTab>('evidence');
+  const [reviewTab, setReviewTab] = useState<ReviewTab>('performance');
   const [selectedKey, setSelectedKey] = useState('');
   const [generateScope, setGenerateScope] = useState<GenerateScope>('single');
   const [generating, setGenerating] = useState(false);
 
+  const sidebarEmployees = workflow === 'review' ? evaluatedEmployees : scopedEmployees;
+
   useEffect(() => {
-    if (!scopedEmployees.length) {
+    const list = sidebarEmployees;
+    if (!list.length) {
       setSelectedKey('');
       return;
     }
-    if (!scopedEmployees.some((e) => e.employeeKey === selectedKey)) {
-      setSelectedKey(scopedEmployees[0].employeeKey);
+    if (!list.some((e) => e.employeeKey === selectedKey)) {
+      setSelectedKey(list[0].employeeKey);
     }
-  }, [scopedEmployees, selectedKey]);
+  }, [sidebarEmployees, selectedKey]);
 
-  const employee: ScopedEmployee | undefined = scopedEmployees.find((e) => e.employeeKey === selectedKey);
-  const employeeSubs = useMemo(() => {
-    if (!employee) return [];
-    return scopedSubmissions.filter((s) => employee.submissionIds.includes(s.id));
-  }, [employee, scopedSubmissions]);
+  const employee: ScopedEmployee | undefined =
+    workflow === 'review'
+      ? evaluatedEmployees.find((e) => e.employeeKey === selectedKey)
+      : scopedEmployees.find((e) => e.employeeKey === selectedKey);
 
   const generateTargets = useMemo(() => {
     if (generateScope === 'all') return scopedEmployees;
@@ -83,13 +85,25 @@ export function AdminAiEvaluation() {
       .finally(() => setGenerating(false));
   };
 
-  const hasGenerated =
-    employee?.storedEval?.status === 'generated' ||
-    employee?.storedEval?.status === 'approved' ||
-    employee?.storedEval?.status === 'override';
-
   const goGenerate = () => {
     if (configReady && scopedEmployees.length) setWorkflow('generate');
+  };
+
+  const hasAnyEvaluated = evaluatedEmployees.length > 0;
+
+  const openResults = (key: string) => {
+    const match =
+      evaluatedEmployees.find((e) => e.employeeKey === key) ??
+      evaluatedEmployees.find((e) => e.email.toLowerCase() === key.toLowerCase());
+    setSelectedKey(match?.employeeKey ?? key);
+    setWorkflow('review');
+    setReviewTab('performance');
+  };
+
+  const workflowDisabled = (id: Workflow) => {
+    if (id === 'setup') return false;
+    if (id === 'review') return !hasAnyEvaluated;
+    return !configReady;
   };
 
   return (
@@ -125,7 +139,7 @@ export function AdminAiEvaluation() {
             key={w.id}
             type="button"
             className={`ai-eval-workflow-tab ${workflow === w.id ? 'active' : ''}`}
-            disabled={w.id !== 'setup' && !configReady}
+            disabled={workflowDisabled(w.id)}
             onClick={() => setWorkflow(w.id)}
           >
             {w.label}
@@ -136,32 +150,52 @@ export function AdminAiEvaluation() {
       <div className="ai-eval-page">
         {workflow !== 'setup' && (
           <EmployeeSidebar
-            employees={scopedEmployees}
+            employees={sidebarEmployees}
             selectedKey={selectedKey}
             onSelect={setSelectedKey}
             poolKeys={new Set()}
             onTogglePool={() => {}}
             onSelectAllPool={() => {}}
             onClearPool={() => {}}
-            listMode="view"
+            listMode={workflow === 'review' ? 'evaluated' : 'view'}
+            emptyMessage={
+              workflow === 'review'
+                ? loadingStored
+                  ? 'Loading saved evaluations…'
+                  : 'No saved AI evaluations yet. Complete Generate first.'
+                : undefined
+            }
           />
         )}
 
         <div className={`ai-eval-main ${workflow === 'setup' ? 'ai-eval-main-full' : ''}`}>
           {workflow === 'setup' && (
-            <SetupPanel
-              forms={forms}
-              config={config}
-              setConfig={setConfig}
-              scopedSubmissions={scopedSubmissions}
-              scopedEmployeeCount={scopedEmployees.length}
-              loadingForms={loadingForms}
-              loadingSubs={loadingSubs}
-              onContinue={goGenerate}
-            />
+            <>
+              <SetupPanel
+                forms={forms}
+                config={config}
+                setConfig={setConfig}
+                scopedSubmissions={scopedSubmissions}
+                scopedEmployeeCount={scopedEmployees.length}
+                loadingForms={loadingForms}
+                loadingSubs={loadingSubs}
+                onContinue={goGenerate}
+              />
+              <EvaluatedEmployeesPanel
+                employees={evaluatedEmployees}
+                loading={loadingStored}
+                onViewResults={openResults}
+              />
+            </>
           )}
 
           {workflow === 'generate' && (
+            <>
+            <EvaluatedEmployeesPanel
+              employees={evaluatedEmployees}
+              loading={loadingStored}
+              onViewResults={openResults}
+            />
             <GeneratePanel
               scope={generateScope}
               setScope={setGenerateScope}
@@ -172,44 +206,31 @@ export function AdminAiEvaluation() {
               onGenerate={handleGenerate}
               selectedKey={selectedKey}
               selectedName={employee?.employeeName}
-              onViewReview={(key) => {
-                setSelectedKey(key);
-                setWorkflow('review');
-              }}
+              onViewReview={openResults}
             />
+            </>
           )}
 
           {workflow === 'review' && employee && (
             <>
-              {!hasGenerated && (
-                <div className="ai-eval-info amber" style={{ marginBottom: 14 }}>
-                  AI review not generated yet. Go to Generate and run for this reviewee.
-                </div>
-              )}
-              <div
-                style={{
-                  marginBottom: 16,
-                  padding: '14px 18px',
-                  background: 'var(--s1)',
-                  borderRadius: 12,
-                  border: '1px solid var(--border2)',
-                }}
-              >
-                <h3 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{employee.employeeName}</h3>
-                <p style={{ margin: 0, fontSize: 13, color: 'var(--text2)' }}>
-                  {employee.title} · {employee.department} · {employee.submissionCount} submission(s) in scope
+              <div className="ai-eval-employee-banner">
+                <h3>{employee.employeeName}</h3>
+                <p>
+                  Saved AI evaluation · {employee.calibratedScore}% · {employee.performanceBand}
+                  {employee.storedEval?.status && (
+                    <> · <strong>{employee.storedEval.status}</strong></>
+                  )}
                 </p>
-                <div style={{ marginTop: 8 }}>
-                  {employee.techStack.map((t) => (
-                    <span key={t} className="ai-eval-pill">
-                      {t}
-                    </span>
-                  ))}
-                </div>
+                {employee.storedEval?.generatedAt && (
+                  <p style={{ marginTop: 6, fontSize: 12, color: 'var(--text3)' }}>
+                    Generated {new Date(employee.storedEval.generatedAt).toLocaleString()}
+                    {employee.formsInvolved.length > 0 && <> · Forms: {employee.formsInvolved.join(', ')}</>}
+                  </p>
+                )}
               </div>
 
               <div className="ai-eval-tabs">
-                {REVIEW_TABS.map((t) => (
+                {RESULTS_TABS.map((t) => (
                   <button
                     key={t.id}
                     type="button"
@@ -221,13 +242,6 @@ export function AdminAiEvaluation() {
                 ))}
               </div>
 
-              <div className={`ai-eval-panel ${reviewTab === 'evidence' ? 'active' : ''}`}>
-                <SubmissionEvidencePanel
-                  employee={employee}
-                  submissions={employeeSubs}
-                  storedEval={stored[employee.employeeKey]}
-                />
-              </div>
               <div className={`ai-eval-panel ${reviewTab === 'performance' ? 'active' : ''}`}>
                 <PerformancePanel employee={employee} />
               </div>
@@ -241,7 +255,11 @@ export function AdminAiEvaluation() {
           )}
 
           {workflow === 'review' && !employee && (
-            <div className="ai-eval-info">Select a reviewee from the sidebar or complete Setup first.</div>
+            <div className="ai-eval-info">
+              {loadingStored
+                ? 'Loading saved evaluations…'
+                : 'No saved AI evaluations yet. Use Generate to create one, then return here.'}
+            </div>
           )}
         </div>
       </div>
