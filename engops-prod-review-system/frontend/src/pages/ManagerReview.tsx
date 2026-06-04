@@ -4,6 +4,7 @@ import { api } from '../api/client';
 import { getUser, logout, setSession, type AuthUser } from '../auth/auth';
 import { DIM_COLORS, ROLE_LABELS } from '../questionBank';
 import { BrandLogo } from '../components/BrandLogo';
+import { randomRevieweeName } from '../utils/randomRevieweeName';
 
 type DimOption = { label: string; value: number };
 type DimQ = { id: string; text: string; opts: DimOption[] };
@@ -45,7 +46,7 @@ export function ManagerReview() {
 
   const [wizardStep, setWizardStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [revieweeName, setRevieweeName] = useState('');
+  const [revieweeName, setRevieweeName] = useState(() => randomRevieweeName());
   const [submitted, setSubmitted] = useState(false);
   const [submitErr, setSubmitErr] = useState('');
   const [shuffledDims, setShuffledDims] = useState<WizardDim[]>([]);
@@ -53,6 +54,7 @@ export function ManagerReview() {
 
   useEffect(() => {
     if (!code) return;
+    setRevieweeName(randomRevieweeName());
     api
       .get('/review-forms/code/' + code)
       .then((r) => setForm(r.data))
@@ -313,7 +315,9 @@ export function ManagerReview() {
             <span className="step-num">BEFORE YOU START</span>
           </div>
           <div className="step-dim-name">Who is being reviewed?</div>
-          <div className="step-dim-sub">The reviewer is taken from your account. Enter the reviewee name below (required).</div>
+          <div className="step-dim-sub">
+            A random reviewee name is filled in for you. Change it if needed, or continue with the suggested name.
+          </div>
         </div>
         <div className="participant-card">
           <h3>Participant details</h3>
