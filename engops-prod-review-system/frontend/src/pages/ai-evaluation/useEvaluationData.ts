@@ -14,6 +14,7 @@ import {
   employeeKey,
   filterSubmissionsByConfig,
   mapApiEvaluationToStored,
+  mapInsightsFields,
   reconcileStoredKeys,
   sortReviewFormsByCreatedDesc,
 } from '../../data/evaluationData';
@@ -227,7 +228,16 @@ export function useEvaluationData() {
     if (event.event === 'section' && event.section && event.data) {
       if (event.section === 'performance') draft.performanceSection = event.data as Record<string, unknown>;
       if (event.section === 'behavioral') draft.behavioralSection = event.data as Record<string, unknown>;
-      if (event.section === 'insights') draft.insightsSection = event.data as Record<string, unknown>;
+      if (event.section === 'insights') {
+        const ins = event.data as Record<string, unknown>;
+        draft.insightsSection = ins;
+        const mapped = mapInsightsFields({ insightsSection: ins }, ins);
+        draft.aiStrengths = mapped.aiStrengths;
+        draft.aiRisks = mapped.aiRisks;
+        draft.aiBiasFlags = mapped.aiBiasFlags;
+        draft.aiDevelopmentPlan = mapped.aiDevelopmentPlan;
+        draft.aiTalkingPoints = mapped.aiTalkingPoints;
+      }
     }
 
     if (event.event === 'complete' && event.data) {

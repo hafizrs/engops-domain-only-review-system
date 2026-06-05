@@ -25,7 +25,18 @@ Health: http://localhost:8001/health
 | Variable | Description |
 |----------|-------------|
 | `AI_SERVICE_SECRET` | Shared secret with NestJS (`X-AI-Service-Secret` header) |
-| `AZURE_OPENAI_*` | **Required** — endpoint, API key, deployment name for summaries |
+| `LLM_PROVIDER` | `ollama` (default, free local demo) or `azure` (paid production) |
+| `OLLAMA_BASE_URL` | Ollama API URL (default `http://localhost:11434`) |
+| `OLLAMA_MODEL` | Model name, e.g. `llama3.2:3b` (4GB GPU) or `llama3.2:1b` (CPU) |
+| `AZURE_OPENAI_*` | Only when `LLM_PROVIDER=azure` |
+
+### Ollama setup (free demo)
+
+```bash
+# Install from https://ollama.com then:
+ollama pull llama3.2:3b    # ~4GB GPU
+# ollama pull llama3.2:1b  # CPU-only alternative
+```
 
 ## LangGraph pipeline
 
@@ -35,9 +46,9 @@ Health: http://localhost:8001/health
 4. Analyze 360 patterns & inconsistencies  
 5. Bias / above-role / risk detection  
 6. Calibrate score + performance band  
-7. **AI Performance** tab (Azure OpenAI)  
-8. **AI Behavioral** tab (Azure OpenAI)  
-9. **AI Insights** tab (Azure OpenAI)  
+7. **AI Performance** tab (Ollama or Azure OpenAI)  
+8. **AI Behavioral** tab (Ollama or Azure OpenAI)  
+9. **AI Insights** tab (Ollama or Azure OpenAI)  
 10. Safety validator + structured JSON output  
 
 ## API

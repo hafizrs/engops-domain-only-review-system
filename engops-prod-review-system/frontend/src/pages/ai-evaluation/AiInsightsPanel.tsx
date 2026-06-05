@@ -1,6 +1,24 @@
 import type { AiEvaluationRecord } from '../../types/aiEvaluation';
 
 export function AiInsightsPanel({ employee }: { employee: AiEvaluationRecord }) {
+  const hasInsights =
+    employee.aiStrengths.length > 0 ||
+    employee.aiRisks.length > 0 ||
+    employee.aiDevelopmentPlan.length > 0 ||
+    employee.aiTalkingPoints.length > 0 ||
+    employee.peerPatterns.positive.length > 0 ||
+    employee.peerPatterns.negative.length > 0 ||
+    employee.aiBiasFlags.length > 0;
+
+  if (!hasInsights) {
+    return (
+      <div className="ai-eval-info amber">
+        AI insights data not found for this evaluation. Re-run Generate, or check that the insights step completed
+        without errors.
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="ai-eval-grid2">

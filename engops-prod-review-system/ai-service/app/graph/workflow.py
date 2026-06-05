@@ -1,10 +1,13 @@
 import json
+import logging
 from typing import Any, Iterator
 
 from langgraph.graph import END, StateGraph
 
 from app.graph import nodes
 from app.graph.state import PerformanceEvaluationState
+
+logger = logging.getLogger(__name__)
 
 NODE_LABELS: dict[str, str] = {
     "load_context": "Loading employee context and role weights",
@@ -116,6 +119,7 @@ def stream_evaluation(payload: dict) -> Iterator[dict[str, Any]]:
             for node_name, update in chunk.items():
                 merged.update(update)
                 label = NODE_LABELS.get(node_name, node_name)
+                logger.info("Pipeline step complete: %s", node_name)
                 yield {
                     "event": "node_complete",
                     "node": node_name,

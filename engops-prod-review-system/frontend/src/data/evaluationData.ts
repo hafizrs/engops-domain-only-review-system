@@ -245,24 +245,112 @@ function mapEvidenceStrength(v?: string): AiEvaluationRecord['evidenceStrength']
   return 'medium';
 }
 
+function pickNonEmptyArray<T>(primary?: T[], fallback?: T[]): T[] {
+  if (primary?.length) return primary;
+  if (fallback?.length) return fallback;
+  return primary ?? fallback ?? [];
+}
+
+type StrengthRow = { title?: string; evidence?: string[] };
+type RiskRow = { risk?: string; title?: string };
+type ImprovementRow = { title?: string };
+type BiasRow = { text?: string; reason?: string; suggestedRewrite?: string };
+type DevPlan = {
+  focusAreas?: string[];
+  next30Days?: string[];
+  next60Days?: string[];
+  next90Days?: string[];
+};
+
+function strengthTitles(rows: unknown[]): string[] {
+  return rows
+    .map((row) => {
+      if (typeof row === 'string') return row;
+      if (row && typeof row === 'object') {
+        const r = row as StrengthRow;
+        return r.title ?? '';
+      }
+      return '';
+    })
+    .filter(Boolean);
+}
+
+function riskTitles(rows: unknown[]): string[] {
+  return rows
+    .map((row) => {
+      if (typeof row === 'string') return row;
+      if (row && typeof row === 'object') {
+        const r = row as RiskRow;
+        return r.risk ?? r.title ?? '';
+      }
+      return '';
+    })
+    .filter(Boolean);
+}
+
+function flattenDevPlan(devPlan?: DevPlan): string[] {
+  if (!devPlan) return [];
+  return [
+    ...(devPlan.focusAreas ?? []),
+    ...(devPlan.next30Days ?? []),
+    ...(devPlan.next60Days ?? []),
+    ...(devPlan.next90Days ?? []),
+  ];
+}
+
+/** Map insightsSection + top-level API fields into flat UI fields. */
+export function mapInsightsFields(
+  doc: Record<string, unknown>,
+  ins: Record<string, unknown> = (doc.insightsSection as Record<string, unknown>) ?? {}
+) {
+  const strengths = pickNonEmptyArray(
+    doc.strengths as StrengthRow[],
+    ins.strengths as StrengthRow[]
+  );
+  const risks = pickNonEmptyArray(
+    doc.riskPatterns as RiskRow[],
+    ins.riskPatterns as RiskRow[]
+  );
+  const improvements = pickNonEmptyArray(
+    doc.improvementAreas as ImprovementRow[],
+    ins.improvementAreas as ImprovementRow[]
+  );
+  const bias = pickNonEmptyArray(
+    doc.biasWarnings as BiasRow[],
+    ins.biasWarnings as BiasRow[]
+  );
+  const talkingPoints = pickNonEmptyArray(
+    doc.managerTalkingPoints as string[],
+    ins.managerTalkingPoints as string[]
+  );
+  const devPlan = (doc.developmentPlan ?? ins.developmentPlan) as DevPlan | undefined;
+
+  return {
+    strengths,
+    risks,
+    improvements,
+    bias,
+    talkingPoints,
+    devPlan,
+    aiStrengths: strengthTitles(strengths),
+    aiRisks: riskTitles(risks),
+    aiBiasFlags: bias.map((b) => ({
+      text: b.text ?? '',
+      reason: b.reason ?? '',
+      suggestion: b.suggestedRewrite ?? '',
+    })),
+    aiDevelopmentPlan: flattenDevPlan(devPlan),
+    aiTalkingPoints: talkingPoints,
+    improvementTitles: improvements.map((i) => i.title ?? '').filter(Boolean),
+  };
+}
+
 export function mapApiEvaluationToStored(doc: Record<string, unknown>, employeeKey: string): StoredAiEvaluation {
   const perf = (doc.performanceSection as Record<string, unknown>) ?? {};
   const beh = (doc.behavioralSection as Record<string, unknown>) ?? {};
   const ins = (doc.insightsSection as Record<string, unknown>) ?? {};
-
-  type StrengthRow = { title?: string; evidence?: string[] };
-  type RiskRow = { risk?: string };
-  type ImprovementRow = { title?: string };
-
-  const strengths: StrengthRow[] =
-    (doc.strengths as StrengthRow[]) ?? (ins.strengths as StrengthRow[]) ?? [];
-  const risks: RiskRow[] = (doc.riskPatterns as RiskRow[]) ?? (ins.riskPatterns as RiskRow[]) ?? [];
-  const bias = (doc.biasWarnings as { text?: string; reason?: string; suggestedRewrite?: string }[]) ?? [];
-  const devPlan = (doc.developmentPlan ?? ins.developmentPlan) as
-    | { next30Days?: string[]; next60Days?: string[]; next90Days?: string[] }
-    | undefined;
-  const improvements: ImprovementRow[] =
-    (doc.improvementAreas as ImprovementRow[]) ?? (ins.improvementAreas as ImprovementRow[]) ?? [];
+  const mappedInsights = mapInsightsFields(doc, ins);
+  const { strengths } = mappedInsights;
 
   const status: AiEvalStatus = doc.approvedByManager ? 'approved' : 'generated';
   const achievementsFromPerf = (perf.achievements as string[]) ?? [];
@@ -279,19 +367,11 @@ export function mapApiEvaluationToStored(doc: Record<string, unknown>, employeeK
     includedSubmissionIds: ((doc.includedSubmissionIds as unknown[]) ?? []).map(String),
     sourceFormCodes: (doc.sourceFormCodes as string[]) ?? [],
     aiSummary: String(perf.summary ?? doc.aiSummary ?? ''),
-    aiStrengths: strengths.map((s) => s.title ?? '').filter(Boolean),
-    aiRisks: risks.map((r) => r.risk ?? '').filter(Boolean),
-    aiBiasFlags: bias.map((b) => ({
-      text: b.text ?? '',
-      reason: b.reason ?? '',
-      suggestion: b.suggestedRewrite ?? '',
-    })),
-    aiDevelopmentPlan: [
-      ...(devPlan?.next30Days ?? []),
-      ...(devPlan?.next60Days ?? []),
-      ...(devPlan?.next90Days ?? []),
-    ],
-    aiTalkingPoints: (doc.managerTalkingPoints as string[]) ?? (ins.managerTalkingPoints as string[]) ?? [],
+    aiStrengths: mappedInsights.aiStrengths,
+    aiRisks: mappedInsights.aiRisks,
+    aiBiasFlags: mappedInsights.aiBiasFlags,
+    aiDevelopmentPlan: mappedInsights.aiDevelopmentPlan,
+    aiTalkingPoints: mappedInsights.aiTalkingPoints,
     employeeFacingSummary: String(perf.employeeFacingSummary ?? doc.employeeFacingSummary ?? ''),
     calibratedScore: typeof (perf.calibratedScore ?? doc.calibratedScore) === 'number' ? Number(perf.calibratedScore ?? doc.calibratedScore) : undefined,
     roleBasedScore: typeof doc.roleBasedScore === 'number' ? doc.roleBasedScore : undefined,
@@ -299,7 +379,9 @@ export function mapApiEvaluationToStored(doc: Record<string, unknown>, employeeK
     evidenceStrength: doc.evidenceStrength ? String(doc.evidenceStrength) : undefined,
     aboveRoleSignals: (perf.aboveRoleSignals as string[]) ?? ((doc.aboveRoleSignals as { signal?: string }[]) ?? []).map((s) => s.signal ?? '').filter(Boolean),
     achievements: achievementsFromPerf.length ? achievementsFromPerf : achievementsFromStrengths,
-    improvementAreas: (perf.blockers as string[])?.length ? (perf.blockers as string[]) : improvements.map((i) => i.title ?? '').filter(Boolean),
+    improvementAreas: (perf.blockers as string[])?.length
+      ? (perf.blockers as string[])
+      : mappedInsights.improvementTitles,
     performanceSection: Object.keys(perf).length ? perf : (doc.performanceSection as Record<string, unknown>),
     behavioralSection: Object.keys(beh).length ? beh : (doc.behavioralSection as Record<string, unknown>),
     insightsSection: Object.keys(ins).length ? ins : (doc.insightsSection as Record<string, unknown>),
@@ -320,9 +402,7 @@ export function applyStoredEval(employee: AiEvaluationRecord, stored?: StoredAiE
     (stored.recommendedBand && RECOMMENDED_BAND_LABELS[stored.recommendedBand]) ||
     employee.performanceBand;
 
-  const devPlan = ins.developmentPlan as
-    | { next30Days?: string[]; next60Days?: string[]; next90Days?: string[] }
-    | undefined;
+  const fromInsights = mapInsightsFields({ insightsSection: ins }, ins);
 
   return {
     ...employee,
@@ -332,20 +412,17 @@ export function applyStoredEval(employee: AiEvaluationRecord, stored?: StoredAiE
     evidenceStrength: mapEvidenceStrength(stored.evidenceStrength) ?? employee.evidenceStrength,
     managerScores: { ...employee.managerScores, ...dimScores },
     aiSummary: stored.aiSummary ?? String(perf.summary ?? employee.aiSummary),
-    aiStrengths: stored.aiStrengths ?? employee.aiStrengths,
-    aiRisks: stored.aiRisks ?? employee.aiRisks,
-    aiBiasFlags: stored.aiBiasFlags ?? employee.aiBiasFlags,
-    aiDevelopmentPlan:
-      stored.aiDevelopmentPlan?.length
-        ? stored.aiDevelopmentPlan
-        : [
-            ...(devPlan?.next30Days ?? []),
-            ...(devPlan?.next60Days ?? []),
-            ...(devPlan?.next90Days ?? []),
-          ].length
-          ? [...(devPlan?.next30Days ?? []), ...(devPlan?.next60Days ?? []), ...(devPlan?.next90Days ?? [])]
-          : employee.aiDevelopmentPlan,
-    aiTalkingPoints: stored.aiTalkingPoints ?? employee.aiTalkingPoints,
+    aiStrengths: stored.aiStrengths?.length ? stored.aiStrengths : fromInsights.aiStrengths,
+    aiRisks: stored.aiRisks?.length ? stored.aiRisks : fromInsights.aiRisks,
+    aiBiasFlags: stored.aiBiasFlags?.length ? stored.aiBiasFlags : fromInsights.aiBiasFlags,
+    aiDevelopmentPlan: stored.aiDevelopmentPlan?.length
+      ? stored.aiDevelopmentPlan
+      : fromInsights.aiDevelopmentPlan.length
+        ? fromInsights.aiDevelopmentPlan
+        : employee.aiDevelopmentPlan,
+    aiTalkingPoints: stored.aiTalkingPoints?.length
+      ? stored.aiTalkingPoints
+      : fromInsights.aiTalkingPoints,
     employeeFacingSummary: stored.employeeFacingSummary ?? String(perf.employeeFacingSummary ?? employee.employeeFacingSummary),
     aboveRoleSignal: parseAboveRoleSignal(String(perf.aboveRoleSignal ?? employee.aboveRoleSignal)),
     aboveRoleSignals: stored.aboveRoleSignals ?? (perf.aboveRoleSignals as string[]) ?? employee.aboveRoleSignals,

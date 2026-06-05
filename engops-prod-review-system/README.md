@@ -96,7 +96,15 @@ AI_SERVICE_URL=http://localhost:8000
 AI_SERVICE_SECRET=dev-ai-secret-change-me
 ```
 
-Match the same secret in `ai-service/.env`. Set `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_API_KEY`, and `AZURE_OPENAI_DEPLOYMENT_NAME` — summaries require Azure OpenAI.
+Match the same secret in `ai-service/.env`.
+
+**AI summaries (demo):** uses free local [Ollama](https://ollama.com) — no paid API.
+
+```bash
+ollama pull llama3.2:3b   # ~4GB GPU; or llama3.2:1b for CPU-only
+```
+
+In `ai-service/.env`: `LLM_PROVIDER=ollama` (default). For production Azure OpenAI, set `LLM_PROVIDER=azure` and `AZURE_OPENAI_*` keys.
 
 ### AI evaluation API (admin JWT) — matches the AI Evaluation UI
 

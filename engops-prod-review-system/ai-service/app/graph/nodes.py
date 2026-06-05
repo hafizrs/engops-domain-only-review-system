@@ -300,33 +300,59 @@ def generate_manager_summary(state: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _use_llm_fallback(exc: Exception) -> bool:
+    return settings.llm_provider == "ollama" and settings.ollama_fallback_on_error
+
+
 def generate_performance_section_llm(state: dict[str, Any]) -> dict[str, Any]:
+    if state.get("_llm_fallback_used"):
+        return state
     from app.graph.llm_sections import generate_performance_section
 
     try:
         return generate_performance_section(state)
     except Exception as e:
         logger.error("Performance section LLM failed: %s", e)
+        if _use_llm_fallback(e):
+            from app.graph.fallback_sections import build_fallback_sections
+
+            logger.warning("Using rule-based fallback for all AI sections (Ollama timeout/slow CPU)")
+            return build_fallback_sections(state, reason=str(e))
         raise RuntimeError(f"Performance section generation failed: {e}") from e
 
 
 def generate_behavioral_section_llm(state: dict[str, Any]) -> dict[str, Any]:
+    if state.get("behavioral_section") or state.get("_llm_fallback_used"):
+        return state
     from app.graph.llm_sections import generate_behavioral_section
 
     try:
         return generate_behavioral_section(state)
     except Exception as e:
         logger.error("Behavioral section LLM failed: %s", e)
+        if _use_llm_fallback(e):
+            from app.graph.fallback_sections import build_fallback_sections
+
+            return build_fallback_sections(state, reason=str(e))
         raise RuntimeError(f"Behavioral section generation failed: {e}") from e
 
 
 def generate_insights_section_llm(state: dict[str, Any]) -> dict[str, Any]:
+    if state.get("insights_section") or state.get("_llm_fallback_used"):
+        return state
     from app.graph.llm_sections import generate_insights_section
 
     try:
         return generate_insights_section(state)
     except Exception as e:
         logger.error("Insights section LLM failed: %s", e)
+        if _use_llm_fallback(e):
+            from app.graph.fallback_sections import build_fallback_sections, build_insights_fallback_only
+
+            if state.get("performance_section") and state.get("behavioral_section"):
+                logger.warning("Using insights-only rule fallback (keeping performance + behavioral LLM output)")
+                return build_insights_fallback_only(state, reason=str(e))
+            return build_fallback_sections(state, reason=str(e))
         raise RuntimeError(f"Insights section generation failed: {e}") from e
 
 
