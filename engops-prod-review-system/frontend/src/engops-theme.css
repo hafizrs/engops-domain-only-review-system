@@ -1066,25 +1066,26 @@ body {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  z-index: 200;
-  display: none;
+  background: rgba(15, 23, 42, 0.55);
+  z-index: 10000;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  backdrop-filter: blur(6px);
-}
-.overlay.open {
-  display: flex;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   animation: fadeUp 0.2s ease;
 }
 .modal-eo {
+  position: relative;
+  z-index: 10001;
   background: var(--s1);
   border: 1px solid var(--border3);
   border-radius: 18px;
   padding: 30px;
   max-width: 480px;
   width: 100%;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.28);
 }
 .modal-eo h2 {
   font-family: 'Inter', sans-serif;

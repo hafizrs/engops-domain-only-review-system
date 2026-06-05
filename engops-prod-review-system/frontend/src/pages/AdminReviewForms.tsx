@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from '../api/client';
 import { ReviewFormsTable } from '../components/ReviewFormsTable';
 import { DIMS, type DimensionDef } from '../questionBank';
@@ -194,23 +195,27 @@ export function AdminReviewForms() {
         />
       </section>
 
-      <div className={'overlay' + (modalOpen ? ' open' : '')}>
-        <div className="modal-eo">
-          <h2>Review link ready</h2>
-          <div className="modal-sub">Share this code or copy the full URL for managers.</div>
-          <div className="link-code">{createdCode}</div>
-          <div className="link-display">
-            <span className="link-text">{createdUrl}</span>
-            <button type="button" className="copy-btn" onClick={copyLink}>
-              Copy URL
-            </button>
-          </div>
-          <div className="copy-flash">{copyFlash}</div>
-          <button type="button" className="modal-close" onClick={() => setModalOpen(false)}>
-            Close
-          </button>
-        </div>
-      </div>
+      {modalOpen &&
+        createPortal(
+          <div className="overlay open" role="dialog" aria-modal="true" aria-labelledby="review-link-modal-title">
+            <div className="modal-eo">
+              <h2 id="review-link-modal-title">Review link ready</h2>
+              <div className="modal-sub">Share this code or copy the full URL for managers.</div>
+              <div className="link-code">{createdCode}</div>
+              <div className="link-display">
+                <span className="link-text">{createdUrl}</span>
+                <button type="button" className="copy-btn" onClick={copyLink}>
+                  Copy URL
+                </button>
+              </div>
+              <div className="copy-flash">{copyFlash}</div>
+              <button type="button" className="modal-close" onClick={() => setModalOpen(false)}>
+                Close
+              </button>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
